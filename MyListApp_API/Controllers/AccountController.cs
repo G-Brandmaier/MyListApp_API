@@ -19,7 +19,7 @@ namespace MyListApp_API.Controllers
 
         // Endpoint for new users
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] AuthViewModels.RegisterViewModel model)
+        public async Task<IActionResult> Register([FromBody] RegisterUserDto model)
         {
             // Model validation
             if (!ModelState.IsValid)
@@ -40,7 +40,7 @@ namespace MyListApp_API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] AuthViewModels.LoginViewModel model)
+        public async Task<IActionResult> Login([FromBody] LoginUserDto model)
         {
             if (!ModelState.IsValid)
             {

@@ -15,7 +15,7 @@ namespace MyListApp_API.Services
             _signInManager = signInManager;      // Sign-in manager for handling user sign-ins
         }
 
-        public async Task<bool> RegisterUserAsync(AuthViewModels.RegisterViewModel model)
+        public async Task<bool> RegisterUserAsync(RegisterUserDto model)
         {
             var user = new User { UserName = model.Email, Email = model.Email };
 
