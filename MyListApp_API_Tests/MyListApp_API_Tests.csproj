@@ -22,4 +22,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UnitTests\" />
+    <Folder Include="APITests\" />
+  </ItemGroup>
+
 </Project>
