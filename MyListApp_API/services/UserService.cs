@@ -35,6 +35,31 @@ namespace MyListApp_API.Services
 
             return null; // Returns null if authentication fails
         }
+
+
+        public async Task<bool> UpdatePasswordAsync(string userId, string currentPassword, string newPassword)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return false;
+
+            var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+            return result.Succeeded;
+        }
+
+
+
+
+        public async Task<bool> DeleteUserAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return false;
+
+            var result = await _userManager.DeleteAsync(user);
+            return result.Succeeded;
+        }
+
+
+
     }
 }
 

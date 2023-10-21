@@ -56,6 +56,41 @@ namespace MyListApp_API.Controllers
 
             return Unauthorized(new { Message = "Login failed" }); // Returns a 401 Unauthorized response if login fails
         }
+
+        [HttpPost("update-password")]
+        public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await _userService.UpdatePasswordAsync(User.Identity.Name, model.CurrentPassword, model.NewPassword); // assuming user id is in the token
+
+            if (result)
+            {
+                return Ok(new { Message = "Password updated successfully" });
+            }
+
+            return BadRequest(new { Message = "Password update failed" });
+        }
+
+
+        [HttpDelete("delete-account")]
+        public async Task<IActionResult> DeleteAccount()
+        {
+            var result = await _userService.DeleteUserAsync(User.Identity.Name); // assuming user id is in the token
+
+            if (result)
+            {
+                return Ok(new { Message = "Account deleted successfully" });
+            }
+
+            return BadRequest(new { Message = "Account deletion failed" });
+        }
+
+
+
     }
 }
 
