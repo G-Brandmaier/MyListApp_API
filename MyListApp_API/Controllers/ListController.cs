@@ -17,12 +17,12 @@ public class ListController : ControllerBase
 
     [HttpPost]
     [Route("AddList")]
-    public async Task<IActionResult> CreateListItem(UserListDto dto)
+    public async Task<IActionResult> CreateUserList(UserListDto dto)
     {
         if (ModelState.IsValid)
         {
             //Hämta användare, om användare finns fortsätt
-            var listItem = _listService.CreateListItem(dto);
+            var listItem = _listService.CreateUserList(dto);
             if (listItem != null)
             {
                 return Created("", null);
@@ -34,12 +34,12 @@ public class ListController : ControllerBase
 
     [HttpPost]
     [Route("AddToList")]
-    public async Task<IActionResult> AddToList(ListItemDto item)
+    public async Task<IActionResult> AddToUserList(ListItemDto item)
     {
         if (ModelState.IsValid)
         {
             var listItem = item;
-            var result = _listService.AddListItemToList(listItem,item.UserListId, item.UserId);
+            var result = _listService.AddToUserList(listItem.Content,item.UserListId, item.UserId);
             if (result != null)
             {
                 return Created("", null);

@@ -33,18 +33,9 @@ public class ListControllerTests
         {
             Id = new Guid("fa5c9752-2639-4061-b5d6-683871bf3fcd"),
             Title = "Saker att göra",
-            List = new List<ListItem>
+            ListContent = new List<string>
             {
-                new ListItem
-                {
-                    Id = new Guid("fa5c6752-2639-4061-b5d6-683871bf3fcd"),
-                    Content = "Städa"
-                },
-                new ListItem
-                {
-                    Id = new Guid("fa5c6752-2639-4061-b5d6-683871bf3fcd"),
-                    Content = "Plugga"
-                }
+                "Städa"
             }
         };
 
@@ -66,7 +57,7 @@ public class ListControllerTests
         string errorMessage = "Invalid information received, try again!";
 
         //Act
-        var result = _listController.CreateListItem(userListDto);
+        var result = _listController.CreateUserList(userListDto);
 
 
         //Assert
@@ -86,27 +77,23 @@ public class ListControllerTests
             Content = "Handla"
         };
 
-        var expectedListItemReturned = new ListItem
-        {
-            Id = Guid.NewGuid(),
-            Content = "Handla"
-        };
+        var expectedListItemReturned = "Handla";
 
 
         //Användare kopplad till listan
 
-        _listServiceMock.Setup(x => x.AddListItemToList(listItemDto, It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(expectedListItemReturned);
+        _listServiceMock.Setup(x => x.AddToUserList(listItemDto.Content, It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(false); //Gjort om kolla vad som faktiskt ska göras
 
         //Act
 
-        var result = await _listController.AddToList(listItemDto);
+        var result = await _listController.AddToUserList(listItemDto);
 
         //Assert
 
 
         Assert.NotNull(result);
         var response = Assert.IsType<CreatedResult>("");
-        var value = Assert.IsType<ListItem>(response.Value);
+        var value = Assert.IsType<string>(response.Value);
         Assert.Equal(expectedListItemReturned, value);
     }
 
