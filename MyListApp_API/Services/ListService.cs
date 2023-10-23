@@ -1,67 +1,41 @@
 ﻿using MyListApp_API.Models;
+using MyListApp_API.Repository;
 
 namespace MyListApp_API.Services;
 
 public class ListService
 {
     // Fake database for lists all users create
-    private readonly List<UserList> _userLists;
+    private readonly ListRepo _listRepo;
 
-    public ListService()
+    public ListService(ListRepo listRepo)
     {
-        _userLists = new List<UserList>
-        {
-            new UserList
-            {
-                Id = Guid.NewGuid(), 
-                Title = "Att göra",
-                ListContent =
-                {
-                    "Städa", "Handla", "Träna"
-                },
-                UserId = Guid.NewGuid() //vet inte än om det ska vara en string eller inte eller likanande  
-            },
-            new UserList
-            {
-                Id = Guid.NewGuid(),
-                Title = "Fixa inför fest",
-                ListContent =
-                {
-                    "Städa", "Handla"
-                },
-                UserId = Guid.NewGuid() //vet inte än om det ska vara en string eller inte eller likanande  
-            }
-        };
+        _listRepo = listRepo;
     }
 
     public UserList CreateUserList(UserListDto dto)
     {
         if(dto != null)
         {
-            var userList = new UserList
-            {
-                Title = dto.Title
-            };
-            _userLists.Add(userList);
-
+            var userList = new UserList();
+            userList = dto;
+            _listRepo.UserList.Add(userList);
             return userList;
         }
         return null;
     }
 
-    public bool AddToUserList(string item, Guid listId, Guid userId)
+    public UserList AddToUserList(ListItemDto dto)
     {
-        if(item != null)
+        if(dto != null)
         {
-            try
+            var listResult = _listRepo.UserList.Where(x => x.Id == dto.UserListId && x.UserId == dto.UserId).SingleOrDefault();
+            if(listResult != null)
             {
-                 //Hämnta användare med userId, hitta listan med lisId och lägg till item
-            }
-            catch
-            {
-
+                listResult.ListContent.Add(dto.Content);
+                return listResult;
             }
         }
-        return false;
+        return null;
     }
 }

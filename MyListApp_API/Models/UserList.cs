@@ -2,8 +2,9 @@
 
 public class UserList
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     public string Title { get; set; } = null!;
-    public List<string> ListContent { get; set; } = null!;
+    public List<string> ListContent { get; set; } = new List<string>();
     public Guid UserId { get; set; }
+
 }

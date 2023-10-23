@@ -22,27 +22,26 @@ public class ListController : ControllerBase
         if (ModelState.IsValid)
         {
             //Hämta användare, om användare finns fortsätt
-            var listItem = _listService.CreateUserList(dto);
-            if (listItem != null)
+            var userList = _listService.CreateUserList(dto);
+            if (userList != null)
             {
-                return Created("", null);
+                return Created("List successfully created", userList);
             }
-            return BadRequest("Something went wrong, try again!");
+            return Problem("Could not create list");
         }
         return BadRequest("Invalid information received, try again!");
     }
 
     [HttpPost]
     [Route("AddToList")]
-    public async Task<IActionResult> AddToUserList(ListItemDto item)
+    public async Task<IActionResult> AddToUserList(ListItemDto dto)
     {
         if (ModelState.IsValid)
         {
-            var listItem = item;
-            var result = _listService.AddToUserList(listItem.Content,item.UserListId, item.UserId);
+            var result = _listService.AddToUserList(dto);
             if (result != null)
             {
-                return Created("", null);
+                return Created("Content added to selected list", result);
             }
             return Problem("Could not add to list");
         }
