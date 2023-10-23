@@ -3,7 +3,7 @@ using MyListApp_API.Repository;
 
 namespace MyListApp_API.Services;
 
-public class ListService
+public class ListService : IListService
 {
     // Fake database for lists all users create
     private readonly ListRepo _listRepo;

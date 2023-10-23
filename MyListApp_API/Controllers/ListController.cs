@@ -8,9 +8,9 @@ namespace MyListApp_API.Controllers;
 [ApiController]
 public class ListController : ControllerBase
 {
-    private readonly ListService _listService;
+    private readonly IListService _listService;
 
-    public ListController(ListService listService)
+    public ListController(IListService listService)
     {
         _listService = listService;
     }
