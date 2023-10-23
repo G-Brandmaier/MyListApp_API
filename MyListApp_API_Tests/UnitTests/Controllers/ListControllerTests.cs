@@ -1,9 +1,8 @@
-﻿using MyListApp_API.Controllers;
+﻿using Microsoft.AspNetCore.Mvc;
+using Moq;
+using MyListApp_API.Controllers;
 using MyListApp_API.Models;
 using MyListApp_API.Services;
-using Moq;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Any;
 
 namespace MyListApp_API_Tests.UnitTests.Controllers;
 
@@ -21,33 +20,29 @@ public class ListControllerTests
     #region Gabriella Testar
 
     [Fact]
-    public async Task CreateListItem_ShouldCreateUserListAndAddToUsersLists_ReturnCreated()
+    public async Task CreateUserList_ShouldCreateUserList_ReturnCreatedWithTheCreatedList()
     {
         //Arrange
         var userListDto = new UserListDto
         {
-            UserId = new Guid("fa5c9752-2639-4061-b5d6-683871bf3fcd"),
+            UserId = new Guid("fa5h6752-2639-4061-b5d6-683871bf3fcd"),
             Title = "My new list"
         };
-        var userList = new UserList
-        {
-            Id = new Guid("fa5c9752-2639-4061-b5d6-683871bf3fcd"),
-            Title = "Saker att göra",
-            ListContent = new List<string>
-            {
-                "Städa"
-            }
-        };
+        var expectedResult = new UserList { Id = It.IsAny<Guid>(), UserId = It.IsAny<Guid>(), Title = "My new list", ListContent = new List<string>() };
 
+       _listServiceMock.Setup(x => x.CreateUserList(userListDto)).Returns(expectedResult);
 
 
         //Act
 
-
+        var result = _listController.CreateUserList(userListDto);
 
         //Assert
-
+        Assert.NotNull(result);
+        //var response = Assert.IsType<CreatedResult>(result.Result);
+        //var value = Assert.IsType<string>(response.Value);
     }
+
     [Fact]
     public async Task CreateListItem_ReceivesInvalidObject_ReturnBadRequestWithMessage()
     {
@@ -82,7 +77,7 @@ public class ListControllerTests
 
         //Användare kopplad till listan
 
-        _listServiceMock.Setup(x => x.AddToUserList(listItemDto.Content, It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(false); //Gjort om kolla vad som faktiskt ska göras
+       // _listServiceMock.Setup(x => x.AddToUserList(listItemDto.Content, It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(false); //Gjort om kolla vad som faktiskt ska göras
 
         //Act
 
