@@ -21,13 +21,11 @@ public class ListController : ControllerBase
     {
         if (ModelState.IsValid)
         {
-            //Hämta användare, om användare finns fortsätt
             var userList = _listService.CreateUserList(dto);
             if (userList != null)
             {
                 return Created("List successfully created", userList);
             }
-            return Problem("Could not create list");
         }
         return BadRequest("Invalid information received, try again!");
     }
@@ -38,13 +36,17 @@ public class ListController : ControllerBase
     {
         if (ModelState.IsValid)
         {
-            var result = _listService.AddToUserList(dto);
-            if (result != null)
+            if (!string.IsNullOrEmpty(dto.Content.TrimEnd()))
             {
-                return Created("Content added to selected list", result);
+                var result = _listService.AddToUserList(dto);
+                if (result != null)
+                {
+                    return Created("Content added to selected list", result);
+                }
+                return Problem("Could not add to list");
             }
-            return Problem("Could not add to list");
+            return BadRequest("Content input can't be empty!");
         }
-        return BadRequest("Something went wrong, try again!");
+        return BadRequest("Invalid input, try again!");
     }
 }
