@@ -62,6 +62,33 @@ namespace MyListApp_API.Services
 
         }
 
+
+
+
+        public bool UpdatePassword(Guid userId, string currentPassword, string newPassword)
+        {
+            var user = _userRepo.GetUserById(userId); // Ddet ska använda Repo istället _usermanger*******
+            if (user == null) return false;
+
+            user.Password = newPassword;
+            return true;
+            //var result = await _userRepo.ChangePasswordAsync(user, currentPassword, newPassword);
+            //return result.Succeeded;
+        }
+
+
+
+
+        public bool DeleteUserAsync(Guid userId)
+        {
+            var user = _userRepo.GetUserById(userId);//***** samma uppe
+            if (user == null) return false;
+            _userRepo._users.Remove(user);
+            return true;
+        }
+
+
+
     }
 }
 

@@ -4,7 +4,7 @@ namespace MyListApp_API.Repository
 {
     public class UserRepo
     {
-        private List<User> _users = new List<User>();
+        public List<User> _users = new List<User>();
 
         public UserRepo()
         {
