@@ -15,7 +15,7 @@ public class ListService : IListService
         _listRepo = listRepo;
     }
 
-    public UserList CreateUserList(UserListDto dto)
+    public UserList CreateUserList(UserListDto dto) //Lägg till att checka om användare existerar innan
     {
         if(dto != null)
         {
