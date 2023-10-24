@@ -41,7 +41,7 @@ public class ListService : IListService
         return null;
     }
     //Get Lists
-    public IEnumerable<UserList> GetAllLists()
+    public List<UserList> GetAllLists()
     {
         return _listRepo.UserList;
     }

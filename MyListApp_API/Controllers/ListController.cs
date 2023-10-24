@@ -48,9 +48,9 @@ public class ListController : ControllerBase
         }
         return BadRequest("Something went wrong, try again!");
     }
-    public IEnumerable<UserList> GetAllLists()
+    public List<UserList> GetAllLists()
     {
-        return ListRepo.UserLists;
+        return (List<UserList>)ListRepo.UserLists;
     }
 
     //Get list

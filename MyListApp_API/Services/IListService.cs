@@ -12,7 +12,7 @@ public interface IListService
     UserList AddToUserList(ListItemDto dto);
 
     //Add list
-    IEnumerable<UserList> GetAllLists();
+    List<UserList> GetAllLists();
 
     //Delete list
     bool DeleteList(Guid listId);
