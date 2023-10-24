@@ -1,40 +1,67 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using MyListApp_API.Models;
+using MyListApp_API.Repository;
 using System.Threading.Tasks;
 
 namespace MyListApp_API.Services
 {
     public class UserService : IUserService
     {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
+        private readonly UserRepo _userRepo;
+        private readonly ILogger<UserService> _logger;
 
-        public UserService(UserManager<User> userManager, SignInManager<User> signInManager)
+        public UserService(UserRepo userRepo, ILogger<UserService> logger)
         {
-            _userManager = userManager;          // User manager for managing user data
-            _signInManager = signInManager;      // Sign-in manager for handling user sign-ins
+            _userRepo = userRepo;
+            _logger = logger;
         }
 
         public async Task<bool> RegisterUserAsync(RegisterUserDto model)
         {
-            var user = new User { UserName = model.Email, Email = model.Email };
-
-            var result = await _userManager.CreateAsync(user, model.Password);
-
-            return result.Succeeded;             // Returns true if user registration is successful
-        }
-
-        public async Task<User> AuthenticateAsync(string email, string password)
-        {
-            var result = await _signInManager.PasswordSignInAsync(email, password, false, false);
-
-            if (result.Succeeded)
+            // Check whether the user is registered
+            var existingUser = _userRepo.GetUserByEmail(model.Email);
+            if (existingUser != null)
             {
-                return await _userManager.FindByEmailAsync(email); // Returns the user if authentication is successful
+                return false; // Registered user
             }
 
-            return null; // Returns null if authentication fails
+            // Add users to the repository
+            var newUser = new User { UserName = model.Email, Email = model.Email };
+            _userRepo.AddUser(newUser);
+
+
+            //Hard-code the password for example purposes
+            var password = "ExempleHardCodedPassword";
+
+
+            //return result.Succeeded;
+            return true;
         }
+
+        public async Task<string> AuthenticateAsync(string email, string password)
+        {
+            try
+            {
+                // Search for users in the repository
+                var user = _userRepo.GetUserByEmail(email);
+
+                if (user != null)
+                {
+
+                    return user.Id.ToString();
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                // An error Log
+                _logger.LogError(ex, "An error occurred during user authentication.");
+                throw; // Continue throwing exceptions after logging
+            }
+
+        }
+
     }
 }
 
