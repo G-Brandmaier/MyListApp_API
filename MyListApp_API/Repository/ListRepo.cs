@@ -5,7 +5,7 @@ namespace MyListApp_API.Repository;
 // Fake database for lists all users create
 public class ListRepo
 {
-    internal static readonly IEnumerable<UserList> UserLists;
+    internal static readonly List<UserList> UserLists;
 
     public List<UserList> UserList { get; set; }
 

@@ -9,10 +9,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IListService, ListService>();
 builder.Services.AddSingleton<ListRepo>();
 
-//Register ListService (that implements IListService)
-//SKA DEN VARA MED? 
-builder.Services.AddScoped<IListService, ListService>();
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
