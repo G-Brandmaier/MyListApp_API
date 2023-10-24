@@ -67,6 +67,43 @@ namespace MyListApp_API.Controllers
             }
 
         }
+
+
+
+        [HttpPost("update-password")]
+        public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = _userService.UpdatePassword(model.UserId, model.CurrentPassword, model.NewPassword); // assuming user id is in the token
+
+            if (result)
+            {
+                return Ok(new { Message = "Password updated successfully" });
+            }
+
+            return BadRequest(new { Message = "Password update failed" });
+        }
+
+
+
+        [HttpDelete("delete-account")]
+        public async Task<IActionResult> DeleteAccount(Guid userId)
+        {
+            var result =  _userService.DeleteUserAsync(userId); // assuming user id is in the token
+
+            if (result)
+            {
+                return Ok(new { Message = "Account deleted successfully" });
+            }
+
+            return BadRequest(new { Message = "Account deletion failed" });
+        }
+
+
     }
 }
 
