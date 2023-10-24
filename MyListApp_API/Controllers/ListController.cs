@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyListApp_API.Models;
+using MyListApp_API.Repository;
 using MyListApp_API.Services;
 
 namespace MyListApp_API.Controllers;
@@ -47,4 +48,29 @@ public class ListController : ControllerBase
         }
         return BadRequest("Something went wrong, try again!");
     }
+    public List<UserList> GetAllLists()
+    {
+        return (List<UserList>)ListRepo.UserLists;
+    }
+
+    //Get list
+    [HttpGet]
+    public IActionResult GetAllUserLists()
+    {
+        var lists = _listService.GetAllLists();
+        return Ok(lists);
+    }
+
+    //Delete list
+    [HttpDelete("DeleteList/{listId}")]
+    public IActionResult DeleteUserList(Guid listId)
+    {
+        if(_listService.DeleteList(listId))
+        {
+            return Ok("List successfully deleted");
+        }
+        return NotFound("List not found");
+    }
+
+
 }
