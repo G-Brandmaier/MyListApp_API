@@ -1,5 +1,7 @@
 ﻿using MyListApp_API.Models;
 using MyListApp_API.Repository;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MyListApp_API.Services;
 
@@ -37,5 +39,22 @@ public class ListService : IListService
             }
         }
         return null;
+    }
+    //Get Lists
+    public IEnumerable<UserList> GetAllLists()
+    {
+        return _listRepo.UserList;
+    }
+
+    //Delete list
+    public bool DeleteList(Guid listId)
+    {
+        var listRemove = _listRepo.UserList.FirstOrDefault(x => x.Id == listId);
+        if(listRemove != null)
+        {
+            return false; //list is not found
+        }
+        _listRepo.UserList.Remove(listRemove);
+        return true; // list sucessfully moved
     }
 }
