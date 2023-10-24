@@ -11,10 +11,11 @@ namespace MyListApp_API.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IUserService _userService;
-
-        public AccountController(IUserService userService)
+        private readonly ILogger<AccountController> _logger;
+        public AccountController(IUserService userService, ILogger<AccountController> logger)
         {
             _userService = userService; // Injects the IUserService dependency
+            _logger = logger;
         }
 
         // Endpoint for new users
@@ -42,19 +43,29 @@ namespace MyListApp_API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserDto model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);    // Returns a 400 Bad Request if the model state is not valid
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);    // Returns a 400 Bad Request if the model state is not valid
+                }
+
+                var loginResponse = await _userService.AuthenticateAsync(model.Email, model.Password);
+
+                if (loginResponse != null)
+                {
+                    return Ok(loginResponse); // Returns a 200 OK response with user information if login is successful
+                }
+
+                return Unauthorized(new { Message = "Login failed" }); // Returns a 401 Unauthorized response if login fails
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred during login.");
+                return StatusCode(500, new { Message = "An error occurred during login." });
             }
 
-            var user = await _userService.AuthenticateAsync(model.Email, model.Password);
-
-            if (user != null)
-            {
-                return Ok(new { Message = "Login successful", UserId = user.Id }); // Returns a 200 OK response with user information if login is successful
-            }
-
-            return Unauthorized(new { Message = "Login failed" }); // Returns a 401 Unauthorized response if login fails
         }
     }
 }
