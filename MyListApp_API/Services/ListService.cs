@@ -6,19 +6,19 @@ namespace MyListApp_API.Services;
 public class ListService : IListService
 {
     private readonly ListRepo _listRepo;
-    private readonly UserRepo _userRepo;
+    private readonly IUserService _userService;
 
-    public ListService(ListRepo listRepo, UserRepo userRepo)
+    public ListService(ListRepo listRepo, IUserService userService)
     {
         _listRepo = listRepo;
-        _userRepo = userRepo;
+        _userService = userService;
     }
 
     public UserList CreateUserList(UserListDto dto)
     {
         if(dto != null)
         {
-            var user = _userRepo.GetUserById(dto.UserId);
+            var user = _userService.GetUserById(dto.UserId);
 
             if(user != null)
             {

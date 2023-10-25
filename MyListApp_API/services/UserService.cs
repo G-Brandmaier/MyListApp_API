@@ -19,7 +19,7 @@ namespace MyListApp_API.Services
         public async Task<bool> RegisterUserAsync(RegisterUserDto model)
         {
             // Check whether the user is registered
-            var existingUser = _userRepo.GetUserByEmail(model.Email);
+            var existingUser = GetUserByEmail(model.Email);
             if (existingUser != null)
             {
                 return false; // Registered user
@@ -27,7 +27,7 @@ namespace MyListApp_API.Services
 
             // Add users to the repository
             var newUser = new User { UserName = model.Email, Email = model.Email };
-            _userRepo.AddUser(newUser);
+            AddUser(newUser);
 
 
             //Hard-code the password for example purposes
@@ -43,7 +43,7 @@ namespace MyListApp_API.Services
             try
             {
                 // Search for users in the repository
-                var user = _userRepo.GetUserByEmail(email);
+                var user = GetUserByEmail(email);
 
                 if (user != null)
                 {
@@ -62,12 +62,28 @@ namespace MyListApp_API.Services
 
         }
 
+        public User GetUserById(Guid userId)
+        {
+
+            return _userRepo._users.FirstOrDefault(u => u.Id == userId);
+        }
+
+        public User GetUserByEmail(string email)
+        {
+            return _userRepo._users.FirstOrDefault(x => x.Email == email);
+        }
+
+        public void AddUser(User user)
+        {
+            user.Id = Guid.NewGuid();
+            _userRepo._users.Add(user);
+        }
 
 
 
         public bool UpdatePassword(Guid userId, string currentPassword, string newPassword)
         {
-            var user = _userRepo.GetUserById(userId); // Ddet ska använda Repo istället _usermanger*******
+            var user = GetUserById(userId); // Ddet ska använda Repo istället _usermanger*******
             if (user == null) return false;
 
             user.Password = newPassword;
@@ -81,7 +97,7 @@ namespace MyListApp_API.Services
 
         public bool DeleteUserAsync(Guid userId)
         {
-            var user = _userRepo.GetUserById(userId);//***** samma uppe
+            var user = GetUserById(userId);//***** samma uppe
             if (user == null) return false;
             _userRepo._users.Remove(user);
             return true;
