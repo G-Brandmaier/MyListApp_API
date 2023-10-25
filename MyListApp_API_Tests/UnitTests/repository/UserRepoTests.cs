@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyListApp_API_Tests.UnitTests.Repository
 {
-    internal class UserRepoTests
+    public class UserRepoTests
     {
     }
 }
