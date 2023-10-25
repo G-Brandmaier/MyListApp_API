@@ -4,7 +4,6 @@ namespace MyListApp_API.Models;
 
 public class UserListDto
 {
-    //Vet ej om UserId kommer behövas innan Account delen är klar samt om annan typ (int, string)
     [Required]
     public Guid UserId { get; set; }
     [Required]

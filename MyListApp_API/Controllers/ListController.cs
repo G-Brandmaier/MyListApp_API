@@ -50,10 +50,6 @@ public class ListController : ControllerBase
         }
         return BadRequest("Invalid input, try again!");
     }
-    public List<UserList> GetAllLists()
-    {
-        return (List<UserList>)ListRepo.UserLists;
-    }
 
     //Get list
     [HttpGet]
