@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using MyListApp_API.Models;
 using MyListApp_API.Services;
+using MyListApp_API.models;
 
 namespace MyListApp_API.Controllers
 {
@@ -80,12 +81,21 @@ namespace MyListApp_API.Controllers
 
             var result = _userService.UpdatePassword(model.UserId, model.CurrentPassword, model.NewPassword); // assuming user id is in the token
 
+            //if (result)
+            //{
+            //    return Ok(new { Message = "Password updated successfully" });
+            //}
+
+            //return BadRequest(new { Message = "Password update failed" });
+
             if (result)
             {
-                return Ok(new { Message = "Password updated successfully" });
+                return Ok(new UpdatePasswordResponse { Message = "Password updated successfully" });
             }
 
-            return BadRequest(new { Message = "Password update failed" });
+            return BadRequest(new UpdatePasswordResponse { Message = "Password update failed" });
+
+
         }
 
 
