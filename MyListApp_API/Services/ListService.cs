@@ -1,28 +1,32 @@
 ﻿using MyListApp_API.Models;
 using MyListApp_API.Repository;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 
 namespace MyListApp_API.Services;
 
 public class ListService : IListService
 {
-    // Fake database for lists all users create
     private readonly ListRepo _listRepo;
+    private readonly UserRepo _userRepo;
 
-    public ListService(ListRepo listRepo)
+    public ListService(ListRepo listRepo, UserRepo userRepo)
     {
         _listRepo = listRepo;
+        _userRepo = userRepo;
     }
 
-    public UserList CreateUserList(UserListDto dto) //Lägg till att checka om användare existerar innan
+    public UserList CreateUserList(UserListDto dto)
     {
         if(dto != null)
         {
-            var userList = new UserList();
-            userList = dto;
-            _listRepo.UserList.Add(userList);
-            return userList;
+            var user = _userRepo.GetUserById(dto.UserId);
+
+            if(user != null)
+            {
+                var userList = new UserList();
+                userList = dto;
+                _listRepo.UserList.Add(userList);
+                return userList;
+            }
         }
         return null;
     }

@@ -2,7 +2,6 @@
 
 namespace MyListApp_API.Repository;
 
-// Fake database for lists all users create
 public class ListRepo
 {
     public List<UserList> UserList { get; set; }
@@ -18,7 +17,7 @@ public class ListRepo
                 {
                     "Städa", "Handla", "Träna"
                 },
-                UserId = Guid.NewGuid() //vet inte än om det ska vara en string eller inte eller likanande  
+                UserId = Guid.NewGuid()
             },
             new UserList
             {
@@ -27,7 +26,7 @@ public class ListRepo
                 {
                     "Städa", "Handla"
                 },
-                UserId = Guid.NewGuid() //vet inte än om det ska vara en string eller inte eller likanande  
+                UserId = Guid.NewGuid()  
             }
         };
     }
