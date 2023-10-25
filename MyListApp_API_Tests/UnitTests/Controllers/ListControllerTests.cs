@@ -3,6 +3,7 @@ using Moq;
 using MyListApp_API.Controllers;
 using MyListApp_API.Models;
 using MyListApp_API.Services;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MyListApp_API_Tests.UnitTests.Controllers;
 
@@ -30,7 +31,7 @@ public class ListControllerTests
         };
         var expectedResult = new UserList { Id = It.IsAny<Guid>(), UserId = It.IsAny<Guid>(), Title = "My new list", ListContent = new List<string>() };
 
-       _listServiceMock.Setup(x => x.CreateUserList(userListDto)).Returns(expectedResult);
+        _listServiceMock.Setup(x => x.CreateUserList(userListDto)).Returns(expectedResult);
 
         //Act
         var result = await _listController.CreateUserList(userListDto);
@@ -179,4 +180,110 @@ public class ListControllerTests
 
     #endregion
 
+
+    #region Stefanie Testar (5 st)
+    //Test 1. returnerar en lista med UserList-objekt
+    [Fact]
+    public void GetAllUserLists_ReturnOkResulu_WithListOfUserLists()
+    {
+        //Arrange
+        var mockLists = new List<UserList>
+    {
+        new UserList { Title = "List1"},
+        new UserList { Title = "List2"}
+    };
+        _listServiceMock.Setup(x => x.GetAllLists()).Returns(mockLists);
+
+        //Act
+        var result = _listController.GetAllUserLists();
+
+        //Assert
+        var okResult = result as OkObjectResult;
+        Assert.NotNull(okResult);
+        var returnLists = okResult.Value as List<UserList>;
+        Assert.Equal(2, returnLists.Count);
+
+    }
+    //Test 2. returnerar en tom lista (inga UserLists-objekt att hämta)
+    [Fact]
+    public void GetAllUserLists_ReturnsOkResult_WithEmptyLists_WhenNoUserListExists()
+    {
+        //Arrange
+        _listServiceMock.Setup(s => s.GetAllLists()).Returns(new List<UserList>());
+
+        //Act
+        var result = _listController.GetAllUserLists();
+
+        //Assert
+        var okResult = result as OkObjectResult;
+        Assert.NotNull(okResult);
+        var returnLists = okResult.Value as IList<UserList>;
+        Assert.Empty(returnLists);
+    }
+
+    //Test 3.Validera att GetAllUserList svarar när IListService kastar ett undantag
+    [Fact]
+    public void GetAllUserLists_ReturnsInternalServerError_WhenServiceThrowsException()
+    {
+        //Arrange
+        _listServiceMock.Setup(s => s.GetAllLists()).Throws(new Exception());
+        var controller = new ListController(_listServiceMock.Object);
+
+        //Act
+        var result = controller.GetAllUserLists();
+        
+        //Assert
+        var objectResult = Assert.IsType<ObjectResult>(result);
+        Assert.Equal(500, objectResult.StatusCode);
+    }
+
+    //Test 4. Kontrollera att svaret från GetAllUserLists har rätt Content-typ
+    [Fact]
+    public void GetAllUserLists_ReturnsCorrectContentType()
+    {
+        //Arrange 
+        _listServiceMock.Setup(s => s.GetAllLists()).Returns(new List<UserList>());
+        var controller = new ListController(_listServiceMock.Object);
+
+        //Act 
+        var result = controller.GetAllUserLists();
+
+        //Assert
+        var objectResult = Assert.IsType<OkObjectResult>(result);
+        Assert.Equal("application/json", objectResult.ContentTypes.First());
+    }
+
+    //Test 5. Validerar att metoden kan hantera ett stort antal listor utan att kasta ett undan tag
+    [Fact]
+    public void GetAllUserLists_HandleLargeNumberOfLists()
+    {
+        //Arrange
+        var largeNumberOfLists = new List<UserList>();
+
+        for (int i = 0; i < 10000; i++) // ex. 10.000
+        {
+            largeNumberOfLists.Add(new UserList
+            {
+                Title = i.ToString(),
+                ListContent = new List<string> { i.ToString() }
+
+                //alt 2. 
+                //Title = $"Title{i}",
+                //ListContent = new List<string> { $"Item{i}" }
+            });
+        }
+
+        _listServiceMock.Setup(s => s.GetAllLists()).Returns(largeNumberOfLists);
+        var controller = new ListController(_listServiceMock.Object);
+
+        //Act
+        var result = controller.GetAllUserLists();
+
+        //Assert
+        var objectResult = Assert.IsType<OkObjectResult>(result);
+        var returnedLists = Assert.IsType<List<UserList>>(objectResult.Value);
+        Assert.Equal(10000, returnedLists.Count);
+    }
 }
+#endregion
+
