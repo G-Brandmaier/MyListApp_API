@@ -13,26 +13,19 @@ namespace MyListApp_API_Tests.UnitTests.Services;
 
 public class ListServiceTests
 {
-
+    private readonly Mock<IUserService> _userServiceMock;
+    private readonly ListService _listService;
+    private readonly ListRepo _listRepo;
     public ListServiceTests()
     {
-
+        _userServiceMock = new Mock<IUserService>();
+        _listRepo = new ListRepo();
+        _listService = new ListService(_listRepo, _userServiceMock.Object);
     }
 
     [Fact]
     public void CreateUserList_ShouldCreateUserList_ReturnCreatedUserList()
     {
-        //Arrange
-        var userListDto = new UserListDto
-        {
-            Title = "Test List",
-            UserId = Guid.NewGuid()
-        };
 
-        //Act
-
-
-        //Assert
-        
     }
 }
