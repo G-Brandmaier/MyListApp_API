@@ -16,7 +16,7 @@ public class ListService : IListService
 
     public UserList CreateUserList(UserListDto dto)
     {
-        if(dto != null)
+        if(dto != null && dto.Title.Length <= 25)
         {
             var user = _userService.GetUserById(dto.UserId);
 
@@ -33,7 +33,7 @@ public class ListService : IListService
 
     public UserList AddToUserList(ListItemDto dto)
     {
-        if(dto != null)
+        if(dto != null && dto.Content.Length <= 80)
         {
             var listResult = _listRepo.UserList.Where(x => x.Id == dto.UserListId && x.UserId == dto.UserId).SingleOrDefault();
             if(listResult != null)
