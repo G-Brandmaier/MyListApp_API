@@ -95,15 +95,12 @@ namespace MyListApp_API.Controllers
 
             return BadRequest(new UpdatePasswordResponse { Message = "Password update failed" });
 
-
         }
-
-
 
         [HttpDelete("delete-account")]
         public async Task<IActionResult> DeleteAccount(Guid userId)
         {
-            var result =  _userService.DeleteUserAsync(userId); // assuming user id is in the token
+            var result = _userService.DeleteUserAsync(userId); // assuming user id is in the token
 
             if (result)
             {
@@ -111,6 +108,11 @@ namespace MyListApp_API.Controllers
             }
 
             return BadRequest(new { Message = "Account deletion failed" });
+           
+
+
+
+
         }
 
 
