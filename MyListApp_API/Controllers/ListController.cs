@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyListApp_API.Models;
-using MyListApp_API.Repository;
 using MyListApp_API.Services;
 
 namespace MyListApp_API.Controllers;
@@ -70,5 +69,42 @@ public class ListController : ControllerBase
         return NotFound("List not found");
     }
 
+    [HttpGet]
+    [Route("GetAllUserLists/{userId}")]
+    public async Task<IActionResult> GetAllUserListsById(Guid userId)
+    {
+        if (ModelState.IsValid)
+        {
+            if(userId != Guid.Empty)
+            {
+                var resultUserLists = _listService.GetAllUserListsById(userId);
+                if(resultUserLists != null)
+                { 
+                    return Ok(resultUserLists); 
+                }
+            }
+        }
+        return BadRequest("Invalid input, try again!");
+    }
+
+    [HttpPost]
+    [Route("UpdateUserListContent")]
+    public async Task<IActionResult> UpdateUserListContent(UpdateListItemDto dto)
+    {
+        if (ModelState.IsValid)
+        {
+            if (!string.IsNullOrEmpty(dto.NewContent.TrimEnd()))
+            {
+                var result = _listService.UpdateUserListContent(dto);
+                if (result != null)
+                {
+                    return Ok(result);
+                }
+                return Problem("Could not update list");
+            }
+            return BadRequest("Content input can't be empty!");
+        }
+        return BadRequest("Invalid input, try again!");
+    }
 
 }

@@ -14,7 +14,7 @@ public class ListService : IListService
         _userService = userService;
     }
 
-    public UserList CreateUserList(UserListDto dto)
+    public UserList? CreateUserList(UserListDto dto)
     {
         if(dto != null && dto.Title.Length <= 25)
         {
@@ -31,7 +31,7 @@ public class ListService : IListService
         return null;
     }
 
-    public UserList AddToUserList(ListItemDto dto)
+    public UserList? AddToUserList(ListItemDto dto)
     {
         if(dto != null && dto.Content.Length <= 80)
         {
@@ -60,5 +60,31 @@ public class ListService : IListService
         }
         _listRepo.UserList.Remove(listRemove);
         return true; // list sucessfully moved
+    }
+
+    public List<UserList>? GetAllUserListsById(Guid userId)
+    {
+        var user = _userService.GetUserById(userId);
+
+        if(user != null)
+        {
+            return _listRepo.UserList.Where(x => x.UserId == userId).ToList();  
+        }
+        return null;
+    }
+
+    public UserList? UpdateUserListContent(UpdateListItemDto dto)
+    {
+        var user = _userService.GetUserById(dto.UserId);
+        if(user != null && dto.ContentPosition != 0 && dto.NewContent.Length <= 80)
+        {
+            var listResult = _listRepo.UserList.Where(x => x.Id == dto.UserListId && x.UserId == dto.UserId).SingleOrDefault();
+            if(listResult != null)
+            {
+                listResult.ListContent[dto.ContentPosition -1] = dto.NewContent;
+                return listResult;
+            }
+        }
+        return null;
     }
 }
