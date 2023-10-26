@@ -16,4 +16,8 @@ public interface IListService
 
     //Delete list
     bool DeleteList(Guid listId);
+
+    List<UserList>? GetAllUserListsById(Guid userId);
+
+    public UserList? UpdateUserListContent(UpdateListItemDto dto);
 }
