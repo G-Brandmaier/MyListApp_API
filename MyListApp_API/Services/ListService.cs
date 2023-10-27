@@ -5,10 +5,10 @@ namespace MyListApp_API.Services;
 
 public class ListService : IListService
 {
-    private readonly ListRepo _listRepo;
+    private readonly IListRepo _listRepo;
     private readonly IUserService _userService;
 
-    public ListService(ListRepo listRepo, IUserService userService)
+    public ListService(IListRepo listRepo, IUserService userService)
     {
         _listRepo = listRepo;
         _userService = userService;

@@ -9,12 +9,12 @@ public class ListServiceTests
 {
     private readonly Mock<IUserService> _userServiceMock;
     private readonly ListService _listService;
-    private readonly ListRepo _listRepo;
+    private readonly Mock<IListRepo> _listRepo;
     public ListServiceTests()
     {
         _userServiceMock = new Mock<IUserService>();
-        _listRepo = new ListRepo();
-        _listService = new ListService(_listRepo, _userServiceMock.Object);
+        _listRepo = new Mock<IListRepo>();
+        _listService = new ListService(_listRepo.Object, _userServiceMock.Object);
     }
 
     #region Gabriella testar 11st
