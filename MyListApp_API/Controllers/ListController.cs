@@ -21,6 +21,10 @@ public class ListController : ControllerBase
     {
         if (ModelState.IsValid)
         {
+            if (string.IsNullOrEmpty(dto.Title))
+            {
+                return BadRequest("Title input can't be empty!");
+            }
             var userList = _listService.CreateUserList(dto);
             if (userList != null)
             {
@@ -82,6 +86,7 @@ public class ListController : ControllerBase
                 { 
                     return Ok(resultUserLists); 
                 }
+                return Problem("Could not fetch all lists!");
             }
         }
         return BadRequest("Invalid input, try again!");
@@ -104,7 +109,7 @@ public class ListController : ControllerBase
             }
             return BadRequest("Content input can't be empty!");
         }
-        return BadRequest("Invalid input, try again!");
+        return BadRequest("Invalid information received, try again");
     }
 
 }
