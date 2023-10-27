@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddScoped<IListService, ListService>();
-builder.Services.AddSingleton<ListRepo>();
+builder.Services.AddSingleton<IListRepo, ListRepo>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddSingleton<UserRepo>(); //register a UserRepo
 
