@@ -7,4 +7,20 @@ public class UpdateListItemDto
     public int ContentPosition { get; set; }
     public string NewContent { get; set; } = null!;
 
+
+    public bool CheckValidAmountOfCharactersForNewContent(string newContent)
+    {
+        if (newContent.Length > 80)
+            return false;
+        else
+            return true;
+    }
+    public bool CheckValidContentPosition(int position)
+    {
+        if (position != 0)
+            return true;
+        else
+            return false;
+    }
+
 }

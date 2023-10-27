@@ -16,7 +16,7 @@ public class ListService : IListService
 
     public UserList? CreateUserList(UserListDto dto)
     {
-        if(dto != null && dto.Title.Length <= 25)
+        if(dto != null && dto.CheckValidAmountOfCharactersForTitle(dto.Title) != false)
         {
             var user = _userService.GetUserById(dto.UserId);
 
@@ -33,7 +33,7 @@ public class ListService : IListService
 
     public UserList? AddToUserList(ListItemDto dto)
     {
-        if(dto != null && dto.Content.Length <= 80)
+        if(dto != null && dto.CheckValidAmountOfCharactersForContent(dto.Content) != false)
         {
             var listResult = _listRepo.UserList.Where(x => x.Id == dto.UserListId && x.UserId == dto.UserId).SingleOrDefault();
             if(listResult != null)
@@ -76,13 +76,16 @@ public class ListService : IListService
     public UserList? UpdateUserListContent(UpdateListItemDto dto)
     {
         var user = _userService.GetUserById(dto.UserId);
-        if(user != null && dto.ContentPosition != 0 && dto.NewContent.Length <= 80)
+        if(user != null)
         {
-            var listResult = _listRepo.UserList.Where(x => x.Id == dto.UserListId && x.UserId == dto.UserId).SingleOrDefault();
-            if(listResult != null)
+            if (dto.CheckValidContentPosition(dto.ContentPosition) != false && dto.CheckValidAmountOfCharactersForNewContent(dto.NewContent) != false)
             {
-                listResult.ListContent[dto.ContentPosition -1] = dto.NewContent;
-                return listResult;
+                var listResult = _listRepo.UserList.Where(x => x.Id == dto.UserListId && x.UserId == dto.UserId).SingleOrDefault();
+                if (listResult != null)
+                {
+                    listResult.ListContent[dto.ContentPosition - 1] = dto.NewContent;
+                    return listResult;
+                }
             }
         }
         return null;

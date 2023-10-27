@@ -17,4 +17,12 @@ public class UserListDto
             Title = dto.Title
         };
     }
+
+    public bool CheckValidAmountOfCharactersForTitle(string title)
+    {
+        if (title.Length > 25)
+            return false;
+        else
+            return true;
+    }
 }
