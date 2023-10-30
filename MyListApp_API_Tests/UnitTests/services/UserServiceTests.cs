@@ -224,7 +224,188 @@ namespace MyListApp_API_Tests.UnitTests.Services
         }
 
 
-       
+
+
+
+        #endregion
+
+        #region Ghazaleh Delete UserServiceTest ( 8 st )
+
+        /// Det här testet säkerställer att DeleteUserAsync fungerar korrekt när en existerande användare försöker raderas.
+
+
+        [Fact]
+        public void DeleteUserAsync_UserExists_ShouldReturnTrue()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            var user = new User { UserId = userId };
+            _userRepoMock.Setup(r => r.GetUserById(userId)).Returns(user);
+            _userRepoMock.Setup(r => r.DeleteUser(user)).Returns(true);
+
+            // Act
+            var result = _userService.DeleteUserAsync(userId);
+
+            // Assert
+            Assert.True(result);
+            _userRepoMock.Verify(r => r.GetUserById(userId), Times.Once);
+            _userRepoMock.Verify(r => r.DeleteUser(user), Times.Once);
+        }
+
+
+        /// Det här testet säkerställer att DeleteUserAsync hanterar situationer korrekt när en icke-existerande användare försöker raderas.
+
+        [Fact]
+        public void DeleteUserAsync_UserDoesNotExist_ShouldReturnFalse()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            _userRepoMock.Setup(r => r.GetUserById(userId)).Returns((User)null);
+
+            // Act
+            var result = _userService.DeleteUserAsync(userId);
+
+            // Assert
+            Assert.False(result);
+            _userRepoMock.Verify(r => r.GetUserById(userId), Times.Once);
+            _userRepoMock.Verify(r => r.DeleteUser(It.IsAny<User>()), Times.Never);
+        }
+
+
+
+        //när borttagningen av en användare misslyckas
+        [Fact]
+        public void DeleteUserAsync_DeleteFails_ShouldReturnFalse()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            var user = new User { UserId = userId };
+            _userRepoMock.Setup(r => r.GetUserById(userId)).Returns(user);
+            _userRepoMock.Setup(r => r.DeleteUser(user)).Returns(false);
+
+            // Act
+            var result = _userService.DeleteUserAsync(userId); // Notera: inget 'await' här
+
+            // Assert
+            Assert.False(result);
+            _userRepoMock.Verify(r => r.GetUserById(userId), Times.Once);
+            _userRepoMock.Verify(r => r.DeleteUser(user), Times.Once);
+        }
+
+
+        //när ett undantag uppstår under borttagning av en användare.
+        [Fact]
+        public void DeleteUserAsync_ThrowsException_ShouldReturnFalse()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            var user = new User { UserId = userId };
+            _userRepoMock.Setup(r => r.GetUserById(userId)).Returns(user);
+            _userRepoMock.Setup(r => r.DeleteUser(user)).Throws(new Exception("Simulated exception"));
+
+            bool result = false;
+            Exception caughtException = null;
+
+            // Act
+            try
+            {
+                result = _userService.DeleteUserAsync(userId);
+            }
+            catch (Exception ex)
+            {
+                caughtException = ex;
+            }
+
+            // Assert
+            Assert.False(result);
+            Assert.IsType<Exception>(caughtException);
+            Assert.Equal("Simulated exception", caughtException.Message);
+            _userRepoMock.Verify(r => r.GetUserById(userId), Times.Once);
+            _userRepoMock.Verify(r => r.DeleteUser(user), Times.Once);
+        }
+
+
+        //DeleteUserAsync_UserIsNull_ShouldReturnFalse
+
+        [Fact]
+        public void DeleteUserAsync_UserIsNull_ShouldReturnFalse()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            _userRepoMock.Setup(r => r.GetUserById(userId)).Returns((User)null); // Ingen användare finns med det ID:t
+
+            // Act
+            var result = _userService.DeleteUserAsync(userId);
+
+            // Assert
+            Assert.False(result);
+            _userRepoMock.Verify(r => r.GetUserById(userId), Times.Once);
+            _userRepoMock.Verify(r => r.DeleteUser(It.IsAny<User>()), Times.Never); // Kontrollera att DeleteUser aldrig anropas
+        }
+
+        //DeleteUserAsync_UserIsDeleted_ShouldReturnTrue
+
+        [Fact]
+        public void DeleteUserAsync_UserIsDeleted_ShouldReturnTrue()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            var user = new User { UserId = userId };
+            _userRepoMock.Setup(r => r.GetUserById(userId)).Returns(user);
+            _userRepoMock.Setup(r => r.DeleteUser(user)).Returns(true);
+
+            // Act
+            var result = _userService.DeleteUserAsync(userId);
+
+            // Assert
+            Assert.True(result);
+            _userRepoMock.Verify(r => r.GetUserById(userId), Times.Once);
+            _userRepoMock.Verify(r => r.DeleteUser(user), Times.Once);
+        }
+
+        // Om en användare inte finns i databasen, så ska inte DeleteUser-metoden på repo-objektet anropas
+
+        [Fact]
+        public void DeleteUserAsync_UserDoesNotExist_ShouldNotCallDeleteUser()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            _userRepoMock.Setup(r => r.GetUserById(userId)).Returns((User)null);
+
+            // Act
+            var result = _userService.DeleteUserAsync(userId);
+
+            // Assert
+            Assert.False(result);
+            _userRepoMock.Verify(r => r.GetUserById(userId), Times.Once);
+            _userRepoMock.Verify(r => r.DeleteUser(It.IsAny<User>()), Times.Never);
+        }
+
+        //Detta test säkerställer att inget fel loggas om DeleteUser-metoden returnerar false
+
+        [Fact]
+        public void DeleteUserAsync_DeleteFails_ShouldNotLogError()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            var user = new User { UserId = userId };
+            _userRepoMock.Setup(r => r.GetUserById(userId)).Returns(user);
+            _userRepoMock.Setup(r => r.DeleteUser(user)).Returns(false);
+
+            // Act
+            var result = _userService.DeleteUserAsync(userId);
+
+            // Assert
+            Assert.False(result);
+            _loggerMock.Verify(l => l.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+                Times.Never);
+        }
+
 
 
         #endregion
