@@ -7,7 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IListService, ListService>();
 builder.Services.AddSingleton<IListRepo, ListRepo>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddSingleton<UserRepo>(); //register a UserRepo
 builder.Services.AddSingleton<IUserRepo, UserRepo>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
