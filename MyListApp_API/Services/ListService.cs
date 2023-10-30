@@ -7,18 +7,18 @@ namespace MyListApp_API.Services;
 
 public class ListService : IListService
 {
-    private readonly ListRepo _listRepo;
+    private readonly IListRepo _listRepo;
     private readonly IUserService _userService;
 
-    public ListService(ListRepo listRepo, IUserService userService)
+    public ListService(IListRepo listRepo, IUserService userService)
     {
         _listRepo = listRepo;
         _userService = userService;
     }
 
-    public UserList CreateUserList(UserListDto dto)
+    public UserList? CreateUserList(UserListDto dto)
     {
-        if (dto != null && dto.Title.Length <= 25)
+        if(dto != null && dto.CheckValidAmountOfCharactersForTitle(dto.Title) != false)
         {
             var user = _userService.GetUserById(dto.UserId);
 
@@ -33,9 +33,9 @@ public class ListService : IListService
         return null;
     }
 
-    public UserList AddToUserList(ListItemDto dto)
+    public UserList? AddToUserList(ListItemDto dto)
     {
-        if (dto != null && dto.Content.Length <= 80)
+        if(dto != null && dto.CheckValidAmountOfCharactersForContent(dto.Content) != false)
         {
             var listResult = _listRepo.UserList.Where(x => x.Id == dto.UserListId && x.UserId == dto.UserId).SingleOrDefault();
             if (listResult != null)
@@ -63,9 +63,33 @@ public class ListService : IListService
         _listRepo.UserList.Remove(listToRemove);
         return true; //listan borttagen
     }
-    public List<UserList> GetListsByUserId(Guid userId)
-    {
-        throw new NotImplementedException();
 
+    public List<UserList>? GetAllUserListsById(Guid userId)
+    {
+        var user = _userService.GetUserById(userId);
+
+        if(user != null)
+        {
+            return _listRepo.UserList.Where(x => x.UserId == userId).ToList();  
+        }
+        return null;
+    }
+
+    public UserList? UpdateUserListContent(UpdateListItemDto dto)
+    {
+        var user = _userService.GetUserById(dto.UserId);
+        if(user != null)
+        {
+            if (dto.CheckValidContentPosition(dto.ContentPosition) != false && dto.CheckValidAmountOfCharactersForNewContent(dto.NewContent) != false)
+            {
+                var listResult = _listRepo.UserList.Where(x => x.Id == dto.UserListId && x.UserId == dto.UserId).SingleOrDefault();
+                if (listResult != null)
+                {
+                    listResult.ListContent[dto.ContentPosition - 1] = dto.NewContent;
+                    return listResult;
+                }
+            }
+        }
+        return null;
     }
 }

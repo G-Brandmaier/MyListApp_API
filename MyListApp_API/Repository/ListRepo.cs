@@ -2,7 +2,7 @@
 
 namespace MyListApp_API.Repository;
 
-public class ListRepo
+public class ListRepo : IListRepo
 {
     public List<UserList> UserList { get; set; }
 

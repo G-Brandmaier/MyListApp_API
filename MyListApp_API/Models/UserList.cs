@@ -1,4 +1,6 @@
-﻿namespace MyListApp_API.Models;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+
+namespace MyListApp_API.Models;
 
 public class UserList
 {
@@ -6,5 +8,4 @@ public class UserList
     public string Title { get; set; } = null!;
     public List<string> ListContent { get; set; } = new List<string>();
     public Guid UserId { get; set; }
-
 }
