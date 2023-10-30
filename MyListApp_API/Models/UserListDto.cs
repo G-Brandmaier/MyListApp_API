@@ -20,9 +20,11 @@ public class UserListDto
 
     public bool CheckValidAmountOfCharactersForTitle(string title)
     {
-        if (title.Length > 25)
-            return false;
-        else
-            return true;
+        if(!string.IsNullOrWhiteSpace(title))
+        {
+            if (title.Length <= 25)
+                return true;
+        }
+        return false;
     }
 }
