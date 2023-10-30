@@ -10,17 +10,21 @@ public class UpdateListItemDto
 
     public bool CheckValidAmountOfCharactersForNewContent(string newContent)
     {
-        if (newContent.Length > 80)
-            return false;
-        else
-            return true;
+        if(!string.IsNullOrEmpty(newContent))
+        {
+            if (newContent.Length <= 80)
+                return true;
+        }
+        return false;
     }
-    public bool CheckValidContentPosition(int position)
+    public bool CheckValidContentPosition(int position, int existingListPositions)
     {
-        if (position != 0)
-            return true;
-        else
-            return false;
+        if (!int.IsNegative(position) && position <= existingListPositions)
+        {
+            if (position != 0)
+                return true;
+        }
+        return false;
     }
 
 }

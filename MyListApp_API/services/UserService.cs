@@ -19,6 +19,12 @@ namespace MyListApp_API.Services
 
         public async Task<bool> RegisterUserAsync(RegisterUserDto model)
         {
+            // Check for model validity
+            if (string.IsNullOrWhiteSpace(model.Email) || !model.Email.Contains('@'))
+            {
+                return false;
+            }
+
             // Check whether the user is registered
             var existingUser = GetUserByEmail(model.Email);
             if (existingUser != null)
@@ -27,12 +33,8 @@ namespace MyListApp_API.Services
             }
 
             // Add users to the repository
-            var newUser = new User { UserName = model.Email, Email = model.Email };
+            var newUser = new User { UserName = model.Email, Email = model.Email, Password = "ExempleHardCodedPassword" };
             AddUser(newUser);
-
-
-            //Hard-code the password for example purposes
-            var password = "ExempleHardCodedPassword";
 
 
             //return result.Succeeded;
