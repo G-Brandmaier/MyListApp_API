@@ -3,7 +3,9 @@ using MyListApp_API.models;
 using MyListApp_API.Models;
 using MyListApp_API.Repository;
 using MyListApp_API.Services;
+using NuGet.Frameworks;
 using System.Xml.Serialization;
+using System.Linq;
 
 namespace MyListApp_API_Tests.UnitTests.Services;
 
@@ -401,304 +403,397 @@ public class ListServiceTests
     #endregion
 
 
-    #region Steff testar ListService, GetAllLists (5 st)
+    #region Steff testar ListService, GetAllLists (8 st)
 
-    ////Test 1. när listan är tom
-    //[Fact]
-    //public void GetAllLists_WhenNoLists_ReturnEmptyList()
-    //{
-    //    //Arrange
-    //    _listRepo.UserList.Clear();
+    //Test 1. när listan är tom
+    [Fact]
+    public void GetAllLists_WhenNoLists_ReturnEmptyList()
+    {
+        //Arrange
+        var mockList = new List<UserList>();
+        _listRepoMock.Setup(r => r.UserList).Returns(mockList); 
 
-    //    //Act
-    //    var result = _listService.GetAllLists();
+        //Act
+        var result = _listService.GetAllLists();
 
-    //    //Assert
-    //    Assert.NotNull(result);
-    //    Assert.Empty(result);
-    //}
-    ////Test 2. Testa att alla listor returneras
-    //[Fact]
-    //public void GetAllLists_WhenMultipleListsExcist_ReturnAllLists()
-    //{
-    //    //Arrange
-    //    var list1 = new UserList { Title = "List 1", UserId = Guid.NewGuid() };
-    //    var list2 = new UserList { Title = "List 2", UserId = Guid.NewGuid() };
-    //    _listRepo.UserList.Clear();
-    //    _listRepo.UserList.AddRange(new[] { list1, list2 });
+        //Assert
+        Assert.NotNull(result);
+        Assert.Empty(result);
+    }
 
-    //    //Act
-    //    var result = _listService.GetAllLists();
+    //Test 2. Testar att alla listor returneras
+    [Fact]
+    public void GetAllLists_WhenMultipleListsExcist_ReturnAllLists()
+    {
+        //Arrange
+        var list1 = new UserList { Title = "List 1", UserId = Guid.NewGuid() };
+        var list2 = new UserList { Title = "List 2", UserId = Guid.NewGuid() };
+        var mockList = new List<UserList> { list1, list2 };
+        _listRepoMock.Setup(r => r.UserList).Returns(mockList);
 
-    //    //Assert
-    //    Assert.NotNull(result);
-    //    Assert.Equal(2, result.Count);
-    //    Assert.Contains(list1, result);
-    //    Assert.Contains(list2, result);
-    //}
-    ////Test 3. Att man ej kan påverka hämtade listor externt
-    //[Fact]
-    //public void GetAllLists_ModifyReturnedLists()
-    //{
-    //    //Arrange
-    //    var list1 = new UserList { Title = "List 1", UserId = Guid.NewGuid() };
-    //    _listRepo.UserList.Clear();
-    //    _listRepo.UserList.Add(list1);
+        //Act
+        var result = _listService.GetAllLists();
 
-    //    //Act
-    //    var result = _listService.GetAllLists();
-    //    result.Clear();
+        //Assert
+        Assert.NotNull(result);
+        Assert.Equal(2, result.Count);
+        Assert.Contains(list1, result);
+        Assert.Contains(list2, result);
+    }
 
-    //    //Assert
-    //    Assert.Empty(_listRepo.UserList);
-    //}
+    //Test 3. Att man ej kan påverka hämtade listor externt
+    [Fact]
+    public void GetAllLists_ModifyReturnedLists()
+    {
+        //Arrange
+        var list1 = new UserList { Title = "List 1", UserId = Guid.NewGuid() };
+        var mockList = new List<UserList> { list1 };
+        _listRepoMock.Setup(r => r.UserList).Returns(mockList);
 
-    ////Test 4. Lägg till lista och se om den returneras korrekt
-    //[Fact]
-    //public void GetAllLists_WhenOneListExists_ReturnThatList()
-    //{
-    //    //Arrange
-    //    var list1 = new UserList { Title = "List 1", UserId = Guid.NewGuid() };
-    //    _listRepo.UserList.Clear();
-    //    _listRepo.UserList.Add(list1);
+        //Act
+        var result = _listService.GetAllLists();
+        result.Clear();
 
-    //    //Act
-    //    var result = _listService.GetAllLists();
+        //Assert
+        Assert.Empty(_listRepoMock.Object.UserList); //att den ej är null
+        Assert.Contains(list1, _listRepoMock.Object.UserList);
+    }
 
-    //    //Assert
-    //    Assert.NotNull(result);
-    //    Assert.Single(result);
-    //    Assert.Contains(list1, result);
-    //}
-    ////Test 5. Testa ordningen på listorna, att de returnerar i den ordning de läggs till
-    //[Fact]
-    //public void GetAllLists_WhenMultipleListsAdded_ReturnsInCorrectOrder()
-    //{
-    //    //Arrange
-    //    var list1 = new UserList { Title = "Title 1", UserId = Guid.NewGuid() };
-    //    var list2 = new UserList { Title = "Title 2", UserId = Guid.NewGuid() };
-    //    _listRepo.UserList.Clear();
-    //    _listRepo.UserList.AddRange(new[] { list1, list2 });
+    //Test 4. Lägg till lista och se om den returneras korrekt
+    [Fact]
+    public void GetAllLists_WhenOneListExists_ReturnThatList()
+    {
+        //Arrange
+        var list1 = new UserList { Title = "List 1", UserId = Guid.NewGuid() };
+        var mockList = new List<UserList> { list1 };
+        _listRepoMock.Setup(r => r.UserList).Returns(mockList);
 
-    //    //Act
-    //    var result = _listService.GetAllLists();
+        //Act
+        var result = _listService.GetAllLists();
 
-    //    //Assert
-    //    Assert.NotNull(result);
-    //    Assert.Equal(2, result.Count);
-    //    Assert.Equal(list1, result[0]); //pos.1
-    //    Assert.Equal(list2, result[1]); //pos.2 
-    //}
+        //Assert
+        Assert.NotNull(result);
+        Assert.Single(result);
+        Assert.Contains(list1, result);
+    }
 
+    //Test 5. Testa ordningen på listorna, att de returnerar i den ordning de läggs till
+    [Fact]
+    public void GetAllLists_WhenMultipleListsAdded_ReturnsInCorrectOrder()
+    {
+        //Arrange
+        var list1 = new UserList { Title = "Title 1", UserId = Guid.NewGuid() };
+        var list2 = new UserList { Title = "Title 2", UserId = Guid.NewGuid() };
+        var mockList = new List<UserList> { list1, list2 };
+        _listRepoMock.Setup(r => r.UserList).Returns(mockList);
 
-    #endregion
+        //Act
+        var result = _listService.GetAllLists();
 
-    #region Steff testar ListService DeleteAllLists (9 st)
-    ////Test 1. Ta bort lista med giltigt listid
-    //[Fact]
-    //public void DeleteList_WithValidId_ReturnsTrueAndRemovesList()
-    //{
-    //    // Arrange
-    //    var validUserId = Guid.NewGuid();
-    //    var listToDeleteId = Guid.NewGuid();
-    //    var userList = new UserList { Id = listToDeleteId, Title = "Test list", UserId = validUserId };
-    //    _listRepo.UserList.Clear();
-    //    _listRepo.UserList.Add(userList);
-    //    var deleteUserListDto = new DeleteUserListDto
-    //    {
-    //        UserListId = listToDeleteId,
-    //        UserId = validUserId
-    //    };
+        //Assert
+        Assert.NotNull(result);
+        Assert.Equal(2, result.Count);
+        Assert.Equal(list1, result[0]); //pos.1
+        Assert.Equal(list2, result[1]); //pos.2 
+    }
 
-    //    // Act
-    //    var result = _listService.DeleteList(deleteUserListDto);
+    //Test 6. Hantera null-värden från Repo
+    [Fact]
+    public void GetAllLists_WhenRepoReturnsNull_ReturnEmptyList()
+    {
+        //Arrange
+        _listRepoMock.Setup(r => r.UserList).Returns((List<UserList>)null);
 
-    //    //Assert
-    //    Assert.True(result);
-    //    Assert.DoesNotContain(userList, _listRepo.UserList);
-    //}
-    ////Test 2. Returnera false om lista ej finns
-    //[Fact]
-    //public void DeleteList_WithInvalidId_ReturnFalse()
-    //{
-    //    //Assert
-    //    var invalidId = Guid.NewGuid();
-    //    _listRepo.UserList.Clear();
-    //    var deleteUserlistDto = new DeleteUserListDto 
-    //    { 
-    //        UserListId = invalidId,
-    //        UserId = Guid.NewGuid()
-    //    };
+        //Act
+        var result = _listService.GetAllLists();
 
-    //    //Act
-    //    var result = _listService.DeleteList(deleteUserlistDto);
+        //Assert
+        Assert.NotNull(result);
+        Assert.Empty(result);
+    }
 
-    //    //Assert
-    //    Assert.False(result);
-    //}
-    ////Test 3. Att bara listan man vill ta bort påverkas
-    //[Fact]
-    //public void DeleteList_WithInvalidId_RemovesOnlyTheOneList()
-    //{
-    //    //Arrange
-    //    var validUserId = Guid.NewGuid();
-    //    var listToDelete = Guid.NewGuid();
-    //    var userList1 = new UserList { Id = listToDelete, Title = "List 1", UserId = validUserId };
-    //    var userList2 = new UserList { Id = Guid.NewGuid(), Title = "List 2", UserId = validUserId };
-
-    //    _listRepo.UserList.Clear();
-    //    _listRepo.UserList.AddRange(new[] { userList1, userList2 });
-    //    var deleteUserListDto = new DeleteUserListDto
-    //    {
-    //        UserListId = listToDelete,
-    //        UserId = validUserId
-    //    };
-
-    //    //Act
-    //    _listService.DeleteList(deleteUserListDto);
-
-    //    //Assert
-    //    Assert.DoesNotContain(userList1, _listRepo.UserList);
-    //    Assert.Contains(userList2, _listRepo.UserList);
-    //}
-    ////Test 4
-    //[Fact]
-    //public void DeleteList_withNullDto_ReturnsFalse()
-    //{
-    //    //Act
-    //    var result = _listService.DeleteList(null);
-
-    //    //Assert
-    //    Assert.False(result);
-    //}
-
-    ////Test 5
-    //[Fact]
-    //public void DeleteList_WithInvalidListIdAndValidUserId_ReturnsFalse()
-    //{
-    //    // Arrange
-    //    var validUserId = Guid.NewGuid();
-    //    var userList = new UserList { Id = Guid.NewGuid(), Title = "Test list", UserId = validUserId };
-    //    _listRepo.UserList.Clear();
-    //    _listRepo.UserList.Add(userList);
-    //    var deleteUserListDto = new DeleteUserListDto
-    //    {
-    //        UserListId = Guid.NewGuid(), // Different list ID
-    //        UserId = validUserId
-    //    };
-
-    //    // Act
-    //    var result = _listService.DeleteList(deleteUserListDto);
-
-    //    // Assert
-    //    Assert.False(result);
-    //    Assert.Contains(userList, _listRepo.UserList); // Ensure list is still in repo
-    //}
-
-    ////[Fact]
-    ////public void DeleteList_ReturnsTrue_WhenListExistsForGivenUser()
-    ////{
-    ////    //Arrange
-    ////    var dto = new DeleteUserListDto
-    ////    {
-    ////        UserListId = Guid.NewGuid(),
-    ////        UserId = Guid.NewGuid()
-    ////    };
-    ////    _listRepoMock.Setup(x => x.UserList().Returns(new List<UserList>
-    ////        {
-    ////            new UserList { Id = dto.UserListId, UserId = dto.UserId }
-    ////        }.AsQueryable());
-
-    ////    //Act
-    ////    bool result = _listService.DeleteList(dto);
-
-    ////    //Asset
-    ////    Assert.True(result);
-    ////}
-    ////[Fact]
-    ////public void DeleteList_ReturnsFalse_WhenListDoesNotExistOrUserIdMismatch()
-    ////{
-    ////    // Arrange
-    ////    var dto = new DeleteUserListDto
-    ////    {
-    ////        UserListId = Guid.NewGuid(),
-    ////        UserId = Guid.NewGuid()
-    ////    };
-
-    ////    _listRepoMock.Setup(x => x.UserList).Returns(new List<UserList>().AsQueryable());
-
-    ////    // Act
-    ////    bool result = _listService.DeleteList(dto);
-
-    ////    // Assert
-    ////    Assert.False(result);
-    ////}
-
-    ////Test 6
-    //[Fact]
-    //public void DeleteList_NullDto_ReturnFalse()
-    //{
-    //    //Act
-    //    var result = _listService.DeleteList(null);
+    //Test 7. Säkerställa onödiga anrop och se så att listan hämtas enndast 1 gång
+    [Fact]
+    public void GetAllLists_RepoIsCalledOnlyOnce()
+    {
+        //Arrange
+        var mockList = new List<UserList>();
+        _listRepoMock.Setup(r => r.UserList).Returns(mockList);
         
-    //    //Assert
-    //    Assert.False(result);
-    //}
+        //Act
+        var result = _listService.GetAllLists();
 
-    ////Test 7 
-    //[Fact]
-    //public void DeleteList_WithNoMatchUserId_ReturnFalse()
-    //{
-    //    //Arrange
-    //    var listIdToDelete = Guid.NewGuid();
-    //    var userList = new UserList { Id = listIdToDelete, Title = "Test list", UserId = Guid.NewGuid() };
-    //    _listRepo.UserList.Clear();
-    //    _listRepo.UserList.Add(userList);
-    //    var dto = new DeleteUserListDto { UserListId = listIdToDelete, UserId = Guid.NewGuid() };
+        //Assert
+        _listRepoMock.Verify(r => r.UserList, Times.Once());
+    }
 
-    //    //Act
-    //    var result = _listService.DeleteList(dto);
+    //Test 8. Kan metoden hantera stora listor utan problem?
+    [Fact]
+    public void GetAllLists_WithLargeAmmountOfData_ReturnsAllData()
+    {
+        //Arrange
+        var largeList = Enumerable.Range(0, 10000).Select(i => new UserList { Title = $"List {i}", UserId = Guid.NewGuid() }).ToList();
+        _listRepoMock.Setup(r => r.UserList).Returns(largeList);
 
-    //    //Assert
-    //    Assert.False(result);
-    //    Assert.Contains(userList, _listRepo.UserList);
-    //}
-    ////Tets 8
-    //[Fact]
-    //public void DeleteList_WithValidIdAndEmptyRepo_ReturnFalse()
-    //{
-    //    //Arrange
-    //    var dto = new DeleteUserListDto { UserId = Guid.NewGuid(), UserListId = Guid.NewGuid() };
-    //    _listRepo.UserList.Clear();
+        //Act
+        var result = _listService.GetAllLists();
 
-    //    //Act
-    //    var result = _listService.DeleteList(dto);
-
-    //    //Assert
-    //    Assert.False(result);
-    //}
-
-    ////Test 9 
-    //[Fact]
-    //public void DeleteList_MultipleListsSameUserId_RemovesOnlyOneList()
-    //{
-    //    //Arrange
-    //    var userId = Guid.NewGuid();
-    //    var listIdToDelete = Guid.NewGuid();
-    //    var userList1 = new UserList { Id = listIdToDelete, Title = "List 1", UserId= Guid.NewGuid() };
-    //    var userList2 = new UserList { Id = listIdToDelete, Title = "List 2", UserId = Guid.NewGuid() };
-
-    //    _listRepo.UserList.Clear();
-    //    _listRepo.UserList.AddRange(new[] { userList1, userList2 });
-    //    var dto = new DeleteUserListDto { UserId = userId, UserListId = listIdToDelete };
-
-    //    //Act
-    //    _listService.DeleteList(dto);
-    //    //Assert
-    //    Assert.DoesNotContain(userList1, _listRepo.UserList);   
-    //    Assert.DoesNotContain(userList2, _listRepo.UserList);
-    //}
-
+        //Assert
+        Assert.NotNull(result);
+        Assert.Equal(largeList.Count, result.Count);
+    }
     #endregion
 
+    #region Steff testar ListService DeleteAllLists (11 st)
+
+    //Test 1. Ta bort lista med giltigt listid
+    [Fact]
+    public void DeleteList_WithValidId_ReturnsTrueAndRemovesList()
+    {
+        // Arrange
+        var validUserId = Guid.NewGuid();
+        var listToDeleteId = Guid.NewGuid();
+        var userList = new UserList { Id = listToDeleteId, Title = "Test list", UserId = validUserId };
+
+        _listRepoMock.Setup(r => r.UserList).Returns(new List<UserList> { userList });
+
+        var deleteUserListDto = new DeleteUserListDto
+        {
+            UserListId = listToDeleteId,
+            UserId = validUserId
+        };
+
+        // Act
+        var result = _listService.DeleteList(deleteUserListDto);
+
+        //Assert
+        Assert.True(result);
+        _listRepoMock.Verify(r => r.UserList.Remove(It.IsAny<UserList>()), Times.Once());  
+    }
+
+    //Test 2. Returnera false om lista ej finns
+    [Fact]
+    public void DeleteList_WithInvalidId_ReturnFalse()
+    {
+        //Assert
+        var invalidId = Guid.NewGuid();
+        _listRepoMock.Setup(r => r.UserList).Returns(new List<UserList>());
+
+        var deleteUserlistDto = new DeleteUserListDto
+        {
+            UserListId = invalidId,
+            UserId = Guid.NewGuid()
+        };
+
+        //Act
+        var result = _listService.DeleteList(deleteUserlistDto);
+
+        //Assert
+        Assert.False(result);
+    }
+
+    //Test 3. Att bara listan man vill ta bort påverkas
+    [Fact]
+    public void DeleteList_WithInvalidId_RemovesOnlyTheOneList()
+    {
+        //Arrange
+        var validUserId = Guid.NewGuid();
+        var listToDelete = Guid.NewGuid();
+        var userList1 = new UserList { Id = listToDelete, Title = "List 1", UserId = validUserId };
+        var userList2 = new UserList { Id = Guid.NewGuid(), Title = "List 2", UserId = validUserId };
+
+        _listRepoMock.Setup(r => r.UserList).Returns(new List<UserList> { userList1, userList2 });
+        
+        var deleteUserListDto = new DeleteUserListDto
+        {
+            UserListId = listToDelete,
+            UserId = validUserId
+        };
+
+        //Act
+        _listService.DeleteList(deleteUserListDto);
+
+        //Assert
+        _listRepoMock.Verify(r => r.UserList.Remove(It.Is<UserList>(x => x.Id == listToDelete)), Times.Once());
+    }
+
+    //Test 4. Kontrollera att metoden hanterar null-argument korrekt
+    [Fact]
+    public void DeleteList_withNullDto_ReturnsFalse()
+    {
+        // Arrange
+        var mockList = new List<UserList>
+    {
+        new UserList { Id = Guid.NewGuid(), Title = "List 1", UserId = Guid.NewGuid() },
+        new UserList { Id = Guid.NewGuid(), Title = "List 2", UserId = Guid.NewGuid() }
+    };
+
+        // mocken  returnerar en förbestämd lista
+        _listRepoMock.Setup(r => r.UserList).Returns(mockList);
+
+        // Act
+        var result = _listService.DeleteList(null);
+
+        // Assert
+        Assert.False(result); // förväntningar
+
+        // Verifiera att Remove-metoden aldrig anropades på mocken
+        _listRepoMock.Verify(r => r.UserList.Remove(It.IsAny<UserList>()), Times.Never);
+    }
+
+    //Test 5
+    [Fact]
+    public void DeleteList_WithInvalidListIdAndValidUserId_ReturnsFalse()
+    {
+        //Arrange
+        var validUserId = Guid.NewGuid();
+        var userList = new UserList { Id = Guid.NewGuid(), Title = "Test list", UserId = validUserId };
+        var mockList = new List<UserList> { userList };
+        _listRepoMock.Setup(r => r.UserList).Returns(mockList);
+
+        var deleteUserListDto = new DeleteUserListDto
+        {
+            UserListId = Guid.NewGuid(), //Annat list-Id
+            UserId = validUserId
+        };
+
+        //Act
+        var result = _listService.DeleteList(deleteUserListDto);
+
+        //Assert
+        Assert.False(result);
+        _listRepoMock.Verify(r => r.UserList, Times.Once);
+    }
+  
+    //Test 6
+    [Fact]
+    public void DeleteList_NullDto_ReturnFalse()
+    {
+        //Act
+        var result = _listService.DeleteList(null);
+
+        //Assert
+        Assert.False(result);
+    }
+
+    //Test 7. Tar bort lista utan matchande id, returnera false
+    [Fact]
+    public void DeleteList_WithNoMatchUserId_ReturnFalse()
+    {
+        //Arrange
+        var listIdToDelete = Guid.NewGuid();
+        var userIdToMatch = Guid.NewGuid();
+        var otherUserId = Guid.NewGuid();
+
+        var userList = new UserList
+        {
+            Id = listIdToDelete,
+            Title = "Test list",
+            UserId = userIdToMatch
+        };
+
+        var mockListRepo = new Mock<IListRepo>();
+        mockListRepo.Setup(r => r.UserList).Returns(new List<UserList>() { userList });
+
+        var mockUserService = new Mock<IUserService>();
+        mockUserService.Setup(u => u.GetUserById(It.IsAny<Guid>())).Returns(new User());
+
+        var listService = new ListService(mockListRepo.Object, mockUserService.Object);
+
+        var dto = new DeleteUserListDto { UserListId = listIdToDelete, UserId = otherUserId };
+
+        //Act
+        var result = listService.DeleteList(dto);
+
+        //Assert
+        Assert.False(result);
+        Assert.Empty(_listRepoMock.Object.UserList);
+    }
+
+    //Tets 8. Ta bort lista med rätt id men tomt repo, returnera false
+    [Fact]
+    public void DeleteList_WithValidIdAndEmptyRepo_ReturnFalse()
+    {
+        //Arrange
+        var dto = new DeleteUserListDto { UserId = Guid.NewGuid(), UserListId = Guid.NewGuid() };
+        var mockList = new List<UserList>();
+
+        _listRepoMock.Setup(r => r.UserList).Returns(mockList);
+
+        //Act
+        var result = _listService.DeleteList(dto);
+
+        //Assert
+        Assert.False(result);
+    }
+
+    //Test 9. tar bort spec lista baserat på matchande userid & listid
+    [Fact]
+    public void DeleteList_MultipleListsSameUserId_RemovesOnlyOneList()
+    {
+        //Arrange
+        var userId = Guid.NewGuid();
+        var listIdToDelete = Guid.NewGuid();
+        var userList1 = new UserList { Id = listIdToDelete, Title = "List 1", UserId = Guid.NewGuid() };
+        var userList2 = new UserList { Id = listIdToDelete, Title = "List 2", UserId = Guid.NewGuid() };
+
+        var mockList = new List<UserList> { userList1, userList2 };
+        _listRepoMock.Setup(r => r.UserList).Returns(mockList);
+
+        var dto = new DeleteUserListDto { UserId = userId, UserListId = listIdToDelete };
+
+        //Act
+        _listService.DeleteList(dto);
+
+        //Assert
+        Assert.DoesNotContain(userList1, _listRepoMock.Object.UserList);
+        Assert.DoesNotContain(userList2, _listRepoMock.Object.UserList);
+    }
+
+    //Test. 10
+    [Fact]
+    public void DeleteList_ReturnsTrue_WhenListExistsForGivenUser()
+    {
+        //Arrange
+        var dto = new DeleteUserListDto
+        {
+            UserListId = Guid.NewGuid(),
+            UserId = Guid.NewGuid()
+        };
+        var mockList = new List<UserList>
+        {
+            new UserList { Id = dto.UserListId, UserId = dto.UserId }
+        };
+
+        _listRepoMock.Setup(r => r.UserList).Returns(mockList);
+
+        //Act
+        bool result = _listService.DeleteList(dto);
+
+        //Asset
+        Assert.True(result);
+    }
+
+    //Test 11.
+    [Fact]
+    public void DeleteList_ReturnsFalse_WhenListDoesNotExistOrUserIdMismatch()
+    {
+        //Arrange
+        var dto = new DeleteUserListDto
+        {
+            UserListId = Guid.NewGuid(),
+            UserId = Guid.NewGuid()
+        };
+
+        _listRepoMock.Setup(x => x.UserList).Returns(new List<UserList>());
+
+        //Act
+        bool result = _listService.DeleteList(dto);
+
+        //Assert
+        Assert.False(result);
+    }
+
+
+    #endregion
 }
