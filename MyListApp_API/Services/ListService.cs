@@ -1,5 +1,7 @@
-﻿using MyListApp_API.Models;
+﻿using MyListApp_API.models;
+using MyListApp_API.Models;
 using MyListApp_API.Repository;
+using System.Reflection.Metadata.Ecma335;
 
 namespace MyListApp_API.Services;
 
@@ -20,7 +22,7 @@ public class ListService : IListService
         {
             var user = _userService.GetUserById(dto.UserId);
 
-            if(user != null)
+            if (user != null)
             {
                 var userList = new UserList();
                 userList = dto;
@@ -36,7 +38,7 @@ public class ListService : IListService
         if(dto != null && dto.CheckValidAmountOfCharactersForContent(dto.Content) != false)
         {
             var listResult = _listRepo.UserList.Where(x => x.Id == dto.UserListId && x.UserId == dto.UserId).SingleOrDefault();
-            if(listResult != null)
+            if (listResult != null)
             {
                 listResult.ListContent.Add(dto.Content);
                 return listResult;
@@ -50,16 +52,16 @@ public class ListService : IListService
         return _listRepo.UserList;
     }
 
-    //Delete list
-    public bool DeleteList(Guid listId)
+    public bool DeleteList(DeleteUserListDto dto)
     {
-        var listRemove = _listRepo.UserList.FirstOrDefault(x => x.Id == listId);
-        if(listRemove != null)
+        var listToRemove = _listRepo.UserList.FirstOrDefault(x => x.Id == dto.UserListId && x.UserId == dto.UserId);
+
+        if(listToRemove == null) 
         {
-            return false; //list is not found
+            return false;   //hittar ej lista eller id som matchar
         }
-        _listRepo.UserList.Remove(listRemove);
-        return true; // list sucessfully moved
+        _listRepo.UserList.Remove(listToRemove);
+        return true; //listan borttagen
     }
 
     public List<UserList>? GetAllUserListsById(Guid userId)

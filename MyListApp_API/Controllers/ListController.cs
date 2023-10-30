@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MyListApp_API.models;
 using MyListApp_API.Models;
 using MyListApp_API.Services;
 
@@ -62,15 +63,25 @@ public class ListController : ControllerBase
         return Ok(lists);
     }
 
-    //Delete list
-    [HttpDelete("DeleteList/{listId}")]
-    public IActionResult DeleteUserList(Guid listId)
+    ////Delete list
+    //[HttpDelete("DeleteList")]
+    //public IActionResult DeleteUserList(Guid listId)
+    //{
+    //    if(_listService.DeleteList(listId))
+    //    {
+    //        return Ok("List successfully deleted");
+    //    }
+    //    return NotFound("List not found");
+    //}
+
+    [HttpDelete("DeleteList")]
+    public IActionResult DeleteUserList([FromBody] DeleteUserListDto dto)
     {
-        if(_listService.DeleteList(listId))
+        if (_listService.DeleteList(dto))
         {
-            return Ok("List successfully deleted");
+            return Ok("List sucessfully deleted");
         }
-        return NotFound("List not found");
+        return NotFound("List not found or userId dosnt match");
     }
 
     [HttpGet]
@@ -111,5 +122,4 @@ public class ListController : ControllerBase
         }
         return BadRequest("Invalid information received, try again");
     }
-
 }
