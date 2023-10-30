@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MyListApp_API.Models;
 using MyListApp_API.Services;
 using MyListApp_API.models;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 namespace MyListApp_API.Controllers
 {
@@ -34,12 +35,14 @@ namespace MyListApp_API.Controllers
             // If registration is successful - Send success response
             if (registrationResult)
             {
-                return Ok(new { Message = "Registration successful" });
+                return Ok(new RegisterResponse{ Message = "Registration successful" });
             }
 
             // If registration fails, send an error message
             return BadRequest(new { Message = "Registration failed" });
         }
+
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserDto model)
