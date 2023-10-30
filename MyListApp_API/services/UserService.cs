@@ -92,9 +92,6 @@ namespace MyListApp_API.Services
             //return result.Succeeded;
         }
 
-
-
-
         public bool DeleteUserAsync(Guid userId)
         {
             var user = GetUserById(userId);//***** samma uppe

@@ -1,4 +1,5 @@
-﻿using MyListApp_API.Models;
+﻿using MyListApp_API.models;
+using MyListApp_API.Models;
 using MyListApp_API.Repository;
 using System.Collections.Generic;
 
@@ -11,9 +12,10 @@ public interface IListService
 
     UserList AddToUserList(ListItemDto dto);
 
-    //Add list
     List<UserList> GetAllLists();
 
-    //Delete list
-    bool DeleteList(Guid listId);
+    bool DeleteList(DeleteUserListDto dto);
+
+    List<UserList> GetListsByUserId(Guid userId);
+
 }
