@@ -7,10 +7,11 @@ namespace MyListApp_API.Services
 {
     public class UserService : IUserService
     {
-        private readonly UserRepo _userRepo;
+        private readonly IUserRepo _userRepo;
+        //private readonly UserRepo _userRepo;
         private readonly ILogger<UserService> _logger;
 
-        public UserService(UserRepo userRepo, ILogger<UserService> logger)
+        public UserService(IUserRepo userRepo, ILogger<UserService> logger)
         {
             _userRepo = userRepo;
             _logger = logger;
@@ -65,18 +66,18 @@ namespace MyListApp_API.Services
         public User GetUserById(Guid userId)
         {
 
-            return _userRepo._users.FirstOrDefault(u => u.Id == userId);
+            return _userRepo.GetUserById(userId);
         }
 
         public User GetUserByEmail(string email)
         {
-            return _userRepo._users.FirstOrDefault(x => x.Email == email);
+            return _userRepo.GetUserByEmail(email);
         }
 
         public void AddUser(User user)
         {
             user.Id = Guid.NewGuid();
-            _userRepo._users.Add(user);
+            _userRepo.AddUser(user);
         }
 
 
@@ -94,10 +95,10 @@ namespace MyListApp_API.Services
 
         public bool DeleteUserAsync(Guid userId)
         {
-            var user = GetUserById(userId);//***** samma uppe
+            var user = _userRepo.GetUserById(userId);//***** samma uppe
             if (user == null) return false;
-            _userRepo._users.Remove(user);
-            return true;
+            //_userRepo._users.Remove(user);
+            return _userRepo.DeleteUser(user);
         }
 
 
