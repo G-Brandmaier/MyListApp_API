@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-
-namespace MyListApp_API.Models;
+﻿namespace MyListApp_API.Models;
 
 public class ListItemDto
 {
@@ -10,9 +8,11 @@ public class ListItemDto
 
     public bool CheckValidAmountOfCharactersForContent(string content)
     {
-        if (content.Length > 80)
-            return false;
-        else
-            return true;
+        if(!string.IsNullOrEmpty(content))
+        {
+            if (content.Length <= 80)
+                return true;
+        }
+        return false;
     }
 }

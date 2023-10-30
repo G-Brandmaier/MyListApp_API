@@ -1,7 +1,6 @@
 ﻿using MyListApp_API.models;
 using MyListApp_API.Models;
 using MyListApp_API.Repository;
-using System.Reflection.Metadata.Ecma335;
 
 namespace MyListApp_API.Services;
 
@@ -37,11 +36,15 @@ public class ListService : IListService
     {
         if(dto != null && dto.CheckValidAmountOfCharactersForContent(dto.Content) != false)
         {
-            var listResult = _listRepo.UserList.Where(x => x.Id == dto.UserListId && x.UserId == dto.UserId).SingleOrDefault();
-            if (listResult != null)
+            var user = _userService.GetUserById(dto.UserId);
+            if (user != null)
             {
-                listResult.ListContent.Add(dto.Content);
-                return listResult;
+                var listResult = _listRepo.UserList.Where(x => x.Id == dto.UserListId && x.UserId == dto.UserId).SingleOrDefault();
+                if (listResult != null)
+                {
+                    listResult.ListContent.Add(dto.Content);
+                    return listResult;
+                }
             }
         }
         return null;
@@ -77,16 +80,19 @@ public class ListService : IListService
 
     public UserList? UpdateUserListContent(UpdateListItemDto dto)
     {
-        var user = _userService.GetUserById(dto.UserId);
-        if(user != null)
+        if (dto != null && dto.CheckValidAmountOfCharactersForNewContent(dto.NewContent) != false)
         {
-            if (dto.CheckValidContentPosition(dto.ContentPosition) != false && dto.CheckValidAmountOfCharactersForNewContent(dto.NewContent) != false)
+            var user = _userService.GetUserById(dto.UserId);
+            if (user != null)
             {
                 var listResult = _listRepo.UserList.Where(x => x.Id == dto.UserListId && x.UserId == dto.UserId).SingleOrDefault();
                 if (listResult != null)
                 {
-                    listResult.ListContent[dto.ContentPosition - 1] = dto.NewContent;
-                    return listResult;
+                    if (dto.CheckValidContentPosition(dto.ContentPosition, listResult.ListContent.Count) != false)
+                    {
+                        listResult.ListContent[dto.ContentPosition - 1] = dto.NewContent;
+                        return listResult;
+                    }
                 }
             }
         }
