@@ -19,17 +19,13 @@ public class ListControllerTests
 
     #region Gabriella Testar (18st)
 
+    #region Testar metoden CreateUserList
     [Fact]
     public async Task CreateUserList_ShouldCreateUserList_ReturnCreatedWithTheCreatedList()
     {
         //Arrange
-        var userListDto = new UserListDto
-        {
-            UserId = Guid.NewGuid(),
-            Title = "My new list"
-        };
+        var userListDto = new UserListDto{ UserId = Guid.NewGuid(), Title = "My new list" };
         var expectedResult = new UserList { Id = It.IsAny<Guid>(), UserId = It.IsAny<Guid>(), Title = "My new list", ListContent = new List<string>() };
-
         _listServiceMock.Setup(x => x.CreateUserList(userListDto)).Returns(expectedResult);
 
         //Act
@@ -46,13 +42,11 @@ public class ListControllerTests
     {
         //Arrange
         UserListDto userListDto = new UserListDto();
-
         string expectedErrorMessage = "Invalid information received, try again!";
         _listController.ModelState.AddModelError("Invalid input", "Invalid information received, try again!");
 
         //Act
         var result = await _listController.CreateUserList(userListDto);
-
 
         //Assert
         var response = Assert.IsType<BadRequestObjectResult>(result);
@@ -64,11 +58,7 @@ public class ListControllerTests
     public async Task CreateUserList_UserListCouldNotBeCreated_ReturnBadRequestWithMessage()
     {
         //Arrange
-        UserListDto userListDto = new UserListDto
-        {
-            Title = "Att göra"
-        };
-
+        UserListDto userListDto = new UserListDto{ Title = "Att göra" };
         string expectedErrorMessage = "Invalid information received, try again!";
 
         //Act
@@ -84,12 +74,7 @@ public class ListControllerTests
     public async Task CreateUserList_ReceivesEmptyTitle_ReturnBadRequestWithMessage()
     {
         //Arrange
-        UserListDto userListDto = new UserListDto
-        {
-            Title = "",
-            UserId = Guid.NewGuid()
-        };
-
+        UserListDto userListDto = new UserListDto{ Title = "", UserId = Guid.NewGuid() };
         string expectedErrorMessage = "Title input can't be empty!";
 
         //Act
@@ -101,28 +86,15 @@ public class ListControllerTests
         Assert.Equal(expectedErrorMessage, response.Value);
     }
 
+    #endregion
+
+    #region Testar metoden AddToUserList
     [Fact]
     public async Task AddToUserList_ShouldAddStringToSpecifiedUserList_ReturnCreatedWithUpdatedUserList()
     {
         //Arrange
-        var listItemDto = new ListItemDto
-        {
-            UserId = Guid.NewGuid(),
-            UserListId = Guid.NewGuid(),
-            Content = "Handla"
-        };
-
-        var expectedUserListReturned = new UserList
-        {
-            Id = It.IsAny<Guid>(),
-            Title = "Att göra",
-            ListContent =
-            {
-                "Handla"
-            },
-            UserId = It.IsAny<Guid>()
-        };
-
+        var listItemDto = new ListItemDto{ UserId = Guid.NewGuid(), UserListId = Guid.NewGuid(), Content = "Handla" };
+        var expectedUserListReturned = new UserList{ Id = It.IsAny<Guid>(), Title = "Att göra", ListContent = { "Handla" }, UserId = It.IsAny<Guid>() };
         _listServiceMock.Setup(x => x.AddToUserList(listItemDto)).Returns(expectedUserListReturned);
 
         //Act
@@ -157,12 +129,7 @@ public class ListControllerTests
     public async Task AddToUserList_ReceivesEmptyContent_ReturnBadRequestWithMessage()
     {
         //Arrange
-        var listItemDto = new ListItemDto
-        {
-            UserId = Guid.NewGuid(),
-            UserListId = Guid.NewGuid(),
-            Content = string.Empty
-        };
+        var listItemDto = new ListItemDto { UserId = Guid.NewGuid(), UserListId = Guid.NewGuid(), Content = string.Empty };
         string expectedErrorMessage = "Content input can't be empty!";
 
         //Act
@@ -178,12 +145,7 @@ public class ListControllerTests
     public async Task AddToUserList_ReceivesBlankSpaceOnlyContent_ReturnBadRequestWithMessage()
     {
         //Arrange
-        var listItemDto = new ListItemDto
-        {
-            UserId = Guid.NewGuid(),
-            UserListId = Guid.NewGuid(),
-            Content = "  "
-        };
+        var listItemDto = new ListItemDto { UserId = Guid.NewGuid(), UserListId = Guid.NewGuid(), Content = "  " };
         string expectedErrorMessage = "Content input can't be empty!";
 
         //Act
@@ -200,7 +162,6 @@ public class ListControllerTests
     {
         //Arrange
         var listItemDto = new ListItemDto();
-
         string expectedErrorMessage = "Invalid input, try again!";
         _listController.ModelState.AddModelError("Invalid model", "Invalid information received, try again!");
 
@@ -213,13 +174,16 @@ public class ListControllerTests
         Assert.Equal(expectedErrorMessage, response.Value);
     }
 
+    #endregion
+
+    #region Testar metoden GetAllUserListsById
+
     [Fact]
     public async Task GetAllUserListsById_ShouldGetAllUserListsByUserId_ReturnOkWithListOfUserLists()
     {
         //Arrange
         Guid userId = Guid.NewGuid();
         var expectedListUserLists = new List<UserList> { new UserList { Title = "Test List", UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), Id = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c") }};
-
         _listServiceMock.Setup(x => x.GetAllUserListsById(It.IsAny<Guid>())).Returns(expectedListUserLists);
 
         //Act
@@ -270,7 +234,6 @@ public class ListControllerTests
     {
         //Arrange
         Guid userId = Guid.NewGuid();
-
         string expectedErrorMessage = "Invalid input, try again!";
         _listController.ModelState.AddModelError("Invalid input", "Invalid input, try again!");
 
@@ -283,12 +246,15 @@ public class ListControllerTests
         Assert.Equal(expectedErrorMessage, response.Value);
     }
 
+    #endregion
+
+    #region Testar metoden UpdateUserListContent
+
     [Fact]
     public async Task UpdateUserListContent_ReceivesInvalidModel_ReturnBadRequestWithMessage()
     {
         //Arrange
         var updateListItemDto = new UpdateListItemDto();
-
         string expectedErrorMessage = "Invalid information received, try again";
         _listController.ModelState.AddModelError("Invalid model", "Invalid information received, try again");
 
@@ -308,6 +274,7 @@ public class ListControllerTests
         var updatedListItemDto = new UpdateListItemDto { UserId = Guid.NewGuid(), UserListId = Guid.NewGuid(), ContentPosition = 1, NewContent = "Plugga" };
         var expectedUserListReturned = new UserList { Id = Guid.NewGuid(), Title = "Title", ListContent = new List<string> { "Plugga", "Städa" }, UserId = Guid.NewGuid() };
         _listServiceMock.Setup(x => x.UpdateUserListContent(updatedListItemDto)).Returns(expectedUserListReturned);
+
         //Act
         var result = await _listController.UpdateUserListContent(updatedListItemDto);
 
@@ -325,6 +292,7 @@ public class ListControllerTests
         //Arrange
         var updatedListItemDto = new UpdateListItemDto { UserId = Guid.NewGuid(), UserListId = Guid.NewGuid(), ContentPosition = 1, NewContent = "" };
         var expectedErrorMessage = "Content input can't be empty!";
+
         //Act
         var result = await _listController.UpdateUserListContent(updatedListItemDto);
 
@@ -340,6 +308,7 @@ public class ListControllerTests
         //Arrange
         var updatedListItemDto = new UpdateListItemDto { UserId = Guid.NewGuid(), UserListId = Guid.NewGuid(), ContentPosition = 1, NewContent = "       " };
         var expectedErrorMessage = "Content input can't be empty!";
+
         //Act
         var result = await _listController.UpdateUserListContent(updatedListItemDto);
 
@@ -357,6 +326,7 @@ public class ListControllerTests
         UserList userList = null;
         var expectedErrorMessage = "Could not update list";
         _listServiceMock.Setup(x => x.UpdateUserListContent(updatedListItemDto)).Returns(userList);
+
         //Act
         var result = await _listController.UpdateUserListContent(updatedListItemDto);
 
@@ -365,7 +335,7 @@ public class ListControllerTests
         var value = Assert.IsType<ProblemDetails>(objectResult.Value);
         Assert.Equal(expectedErrorMessage, value.Detail);
     }
-
+    #endregion
 
     #endregion
 

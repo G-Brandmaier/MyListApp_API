@@ -10,5 +10,6 @@ namespace MyListApp_API.Repository
         IList<User> GetAllUsers();
 
         bool DeleteUser(User user);
+
     }
 }
