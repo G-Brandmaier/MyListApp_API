@@ -28,7 +28,7 @@ namespace MyListApp_API_Tests.UnitTests.Services
         }
 
 
-        #region UserServiceTests-Ria
+        #region Register-UserServiceTests-Ria (9 st)
         [Fact]
         public async Task RegisterUserAsync_ShouldReturnFalse_IfUserAlreadyExists()
         {
@@ -175,6 +175,179 @@ namespace MyListApp_API_Tests.UnitTests.Services
             Assert.False(result);
         }
         #endregion
+
+
+        #region AuthenticateAsync-UserServiceTests-Ria (4 st)
+
+        [Fact]
+        public async Task AuthenticateAsync_ShouldReturnUserId_WhenUserIsFound()
+        {
+            // Arrange
+            var testUser = new User { Id = Guid.NewGuid(), Email = "test@example.com" };
+            _userRepoMock.Setup(repo => repo.GetUserByEmail("test@example.com")).Returns(testUser);
+
+            // Act
+            var result = await _userService.AuthenticateAsync("test@example.com", "password");
+
+            // Assert
+            Assert.Equal(testUser.Id.ToString(), result);
+        }
+
+
+        [Fact]
+        public async Task AuthenticateAsync_ShouldReturnNull_WhenUserIsNotFound()
+        {
+            // Arrange
+            _userRepoMock.Setup(repo => repo.GetUserByEmail("notfound@example.com")).Returns((User)null);
+
+            // Act
+            var result = await _userService.AuthenticateAsync("notfound@example.com", "password");
+
+            // Assert
+            Assert.Null(result);
+        }
+
+
+        [Fact]
+        public async Task AuthenticateAsync_ShouldReturnUserId_WhenPasswordIsCorrect()
+        {
+            // Arrange
+            var testUser = new User { Id = Guid.NewGuid(), Email = "test@example.com", Password = "correctPassword" };
+            _userRepoMock.Setup(repo => repo.GetUserByEmail("test@example.com")).Returns(testUser);
+
+            // Act
+            var result = await _userService.AuthenticateAsync("test@example.com", "correctPassword");
+
+            // Assert
+            Assert.Equal(testUser.Id.ToString(), result);
+        }
+
+
+
+
+        [Fact]
+        public async Task AuthenticateAsync_ShouldThrowUnexpectedExceptions()
+        {
+            // Arrange
+            _userRepoMock.Setup(repo => repo.GetUserByEmail(It.IsAny<string>())).Throws(new InvalidOperationException());
+
+            // Act & Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _userService.AuthenticateAsync("test@example.com", "password"));
+        }
+
+
+
+
+
+
+        #endregion
+
+
+        #region GetUserByEmail-UserServiceTest - Ria (4 st)
+
+        // Checking if the email is valid returns the user
+        [Fact]
+        public void GetUserByEmail_ShouldReturnUser_IfEmailExists()
+        {
+            // Arrange
+            var email = "existingUser@example.com";
+            var expectedUser = new User { UserName = email, Email = email };
+            _userRepoMock.Setup(repo => repo.GetUserByEmail(email)).Returns(expectedUser);
+
+            // Act
+            var returnedUser = _userService.GetUserByEmail(email);
+
+            // Assert
+            Assert.Equal(expectedUser, returnedUser);
+        }
+
+
+        [Fact]
+        public void GetUserByEmail_ShouldReturnNull_IfEmailDoesNotExist()
+        {
+            // Arrange
+            var email = "nonExistingUser@example.com";
+            _userRepoMock.Setup(repo => repo.GetUserByEmail(email)).Returns((User)null);
+
+            // Act
+            var returnedUser = _userService.GetUserByEmail(email);
+
+            // Assert
+            Assert.Null(returnedUser);
+        }
+
+
+        [Fact]
+        public void GetUserByEmail_ShouldReturnNull_IfEmailIsEmpty()
+        {
+            // Arrange
+            _userRepoMock.Setup(repo => repo.GetUserByEmail(string.Empty)).Returns((User)null);
+
+            // Act
+            var returnedUser = _userService.GetUserByEmail(string.Empty);
+
+            // Assert
+            Assert.Null(returnedUser);
+        }
+
+
+        [Fact]
+        public void GetUserByEmail_ShouldHandleExceptions()
+        {
+            // Arrange
+            var email = "exceptionEmail@example.com";
+            _userRepoMock.Setup(repo => repo.GetUserByEmail(email)).Throws(new Exception("DB connection failed"));
+
+            // Act & Assert
+            Exception ex = Assert.Throws<Exception>(() => _userService.GetUserByEmail(email));
+            Assert.Equal("DB connection failed", ex.Message);
+        }
+
+
+
+
+        #endregion
+
+
+        #region AddUser-UserServiceTest-Ria (2 st)
+
+        //to Ensure that AddUser in _userRepo is Called with the Appropriate User
+        [Fact]
+        public void AddUser_ShouldInvokeRepoWithGivenUser()
+        {
+            // Arrange
+            var user = new User { UserName = "test@example.com", Email = "test@example.com" };
+
+            // Act
+            _userService.AddUser(user);
+
+            // Assert
+            _userRepoMock.Verify(repo => repo.AddUser(user), Times.Once);
+        }
+
+
+
+        [Fact]
+        public void AddUser_ShouldAssignUserIdBeforeAdding()
+        {
+            // Arrange
+            var user = new User { UserName = "test@example.com", Email = "test@example.com" };
+
+            // Act
+            _userService.AddUser(user);
+
+            // Assert
+            Assert.NotEqual(Guid.Empty, user.Id);  // Ensure user ID is set (not an empty Guid)
+            _userRepoMock.Verify(repo => repo.AddUser(It.Is<User>(u => u.Id != Guid.Empty)), Times.Once);
+        }
+
+
+
+
+
+        #endregion
+
+
         #region Ghazaleh Update UserServiceTest( 8 st )
 
         //klassen fungerar korrekt när en användare med ett giltigt ID försöker uppdatera sitt lösenord.

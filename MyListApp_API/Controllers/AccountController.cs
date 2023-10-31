@@ -73,6 +73,30 @@ namespace MyListApp_API.Controllers
         }
 
 
+        [HttpGet("all-users")]
+        public IActionResult GetAllUsers()
+        {
+            try
+            {
+                var users = _userService.GetAllUsers();
+
+                var userResponses = users.Select(user => new
+                {
+                    Id = user.Id,
+                    Email = user.Email
+                });
+
+                return Ok(userResponses);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while fetching all users.");
+                return StatusCode(500, new { Message = "An error occurred while fetching all users." });
+            }
+        }
+
+
+
 
         [HttpPost("update-password")]
         public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordDto model)
