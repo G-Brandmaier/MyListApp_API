@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Moq;
 using MyListApp_API.Controllers;
+using MyListApp_API.models;
 using MyListApp_API.Models;
 using MyListApp_API.Services;
+using System.Threading.Tasks;
+
 
 namespace MyListApp_API_Tests.UnitTests.Controllers;
 
@@ -24,7 +27,7 @@ public class ListControllerTests
     public async Task CreateUserList_ShouldCreateUserList_ReturnCreatedWithTheCreatedList()
     {
         //Arrange
-        var userListDto = new UserListDto{ UserId = Guid.NewGuid(), Title = "My new list" };
+        var userListDto = new UserListDto { UserId = Guid.NewGuid(), Title = "My new list" };
         var expectedResult = new UserList { Id = It.IsAny<Guid>(), UserId = It.IsAny<Guid>(), Title = "My new list", ListContent = new List<string>() };
         _listServiceMock.Setup(x => x.CreateUserList(userListDto)).Returns(expectedResult);
 
@@ -58,7 +61,7 @@ public class ListControllerTests
     public async Task CreateUserList_UserListCouldNotBeCreated_ReturnBadRequestWithMessage()
     {
         //Arrange
-        UserListDto userListDto = new UserListDto{ Title = "Att göra" };
+        UserListDto userListDto = new UserListDto { Title = "Att göra" };
         string expectedErrorMessage = "Invalid information received, try again!";
 
         //Act
@@ -74,7 +77,7 @@ public class ListControllerTests
     public async Task CreateUserList_ReceivesEmptyTitle_ReturnBadRequestWithMessage()
     {
         //Arrange
-        UserListDto userListDto = new UserListDto{ Title = "", UserId = Guid.NewGuid() };
+        UserListDto userListDto = new UserListDto { Title = "", UserId = Guid.NewGuid() };
         string expectedErrorMessage = "Title input can't be empty!";
 
         //Act
@@ -93,8 +96,8 @@ public class ListControllerTests
     public async Task AddToUserList_ShouldAddStringToSpecifiedUserList_ReturnCreatedWithUpdatedUserList()
     {
         //Arrange
-        var listItemDto = new ListItemDto{ UserId = Guid.NewGuid(), UserListId = Guid.NewGuid(), Content = "Handla" };
-        var expectedUserListReturned = new UserList{ Id = It.IsAny<Guid>(), Title = "Att göra", ListContent = { "Handla" }, UserId = It.IsAny<Guid>() };
+        var listItemDto = new ListItemDto { UserId = Guid.NewGuid(), UserListId = Guid.NewGuid(), Content = "Handla" };
+        var expectedUserListReturned = new UserList { Id = It.IsAny<Guid>(), Title = "Att göra", ListContent = { "Handla" }, UserId = It.IsAny<Guid>() };
         _listServiceMock.Setup(x => x.AddToUserList(listItemDto)).Returns(expectedUserListReturned);
 
         //Act
@@ -183,7 +186,7 @@ public class ListControllerTests
     {
         //Arrange
         Guid userId = Guid.NewGuid();
-        var expectedListUserLists = new List<UserList> { new UserList { Title = "Test List", UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), Id = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c") }};
+        var expectedListUserLists = new List<UserList> { new UserList { Title = "Test List", UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), Id = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c") } };
         _listServiceMock.Setup(x => x.GetAllUserListsById(It.IsAny<Guid>())).Returns(expectedListUserLists);
 
         //Act
@@ -283,7 +286,7 @@ public class ListControllerTests
         var response = Assert.IsType<OkObjectResult>(result);
         var returnedUserList = Assert.IsType<UserList>(response.Value);
         Assert.Equal(2, returnedUserList.ListContent.Count);
-        Assert.Equal(updatedListItemDto.NewContent, returnedUserList.ListContent[updatedListItemDto.ContentPosition -1]);
+        Assert.Equal(updatedListItemDto.NewContent, returnedUserList.ListContent[updatedListItemDto.ContentPosition - 1]);
     }
 
     [Fact]
@@ -340,7 +343,9 @@ public class ListControllerTests
     #endregion
 
 
-    #region Stefanie Testar (5 st)
+    #region Stefanie Testar (11 st)
+
+    #region GetAllUserLists
     //Test 1. returnerar en lista med UserList-objekt
     [Fact]
     public void GetAllUserLists_ReturnOkResulu_WithListOfUserLists()
@@ -390,7 +395,7 @@ public class ListControllerTests
 
         //Act
         var result = controller.GetAllUserLists();
-        
+
         //Assert
         var objectResult = Assert.IsType<ObjectResult>(result);
         Assert.Equal(500, objectResult.StatusCode);
@@ -443,6 +448,102 @@ public class ListControllerTests
         var returnedLists = Assert.IsType<List<UserList>>(objectResult.Value);
         Assert.Equal(10000, returnedLists.Count);
     }
+
+    //Test 6
+    [Fact]
+    public void GetallUserLists_ReturnsOkResult_WhenReturnsNull()
+    {
+        //Arrange
+        _listServiceMock.Setup(s => s.GetAllLists()).Returns((List<UserList>)null);
+
+        //Act
+        var result = _listController.GetAllUserLists();
+
+        //Assign
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        Assert.Null(okResult.Value);
+    }
+
+    //Test 7.
+    [Fact]
+    public void GetAllUserLists_HandleListWithLargeDataValues()
+    {
+        //Arrange
+        var largeDataLists = new List<UserList>
+        {
+            new UserList { Title = new string('A', 1000000) },
+            new UserList { Title = new string('B', 1000000) }
+        };
+        _listServiceMock.Setup(s => s.GetAllLists()).Returns(largeDataLists);
+
+        //Act
+        var result = _listController.GetAllUserLists();
+
+        //Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var returnedList = Assert.IsType<List<UserList>>(okResult.Value);
+        Assert.Equal(2, returnedList.Count);
+    }
+
+    //Test 8.
+    [Fact]
+    public void GetAllUserLists_HandleTimeOut()
+    {
+        // Arrange
+        _listServiceMock.Setup(s => s.GetAllLists()).Throws(new TimeoutException());
+
+        // Act & Assert
+        Assert.Throws<TimeoutException>(() => _listController.GetAllUserLists());
+    }
+
+    #endregion
+
+    #region DeleteUserList
+
+    //Test 1.
+    [Fact]
+    public void DeleteUserList_ReturnBadRequest_WhenDtoIsNull()
+    {
+        //Act
+        var result = _listController.DeleteUserList(null);
+
+        //Assert
+        Assert.IsType<BadRequestResult>(result);
+    }
+
+    //Test 2.
+    [Fact]
+    public void DeleteUserList_ReturnsNotFound_WhenFails()
+    {
+        //Arrange
+        _listServiceMock.Setup(s => s.DeleteList(It.IsAny<DeleteUserListDto>())).Returns(false);
+
+        //Act
+        var result = _listController.DeleteUserList(new DeleteUserListDto());
+
+        //Assert
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        Assert.Equal("List not found or no match with userId", notFoundResult.Value);
+    }
+
+    //Test 3.
+    [Fact]
+    public void DeleteUserList_ReturnOk_WhenSucessfull()
+    {
+        //Arrange
+        _listServiceMock.Setup(s => s.DeleteList(It.IsAny<DeleteUserListDto>())).Returns(true);
+
+        //Act
+        var result = _listController.DeleteUserList(new DeleteUserListDto());
+        
+        //Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        Assert.Equal("List sucessfully deleted", okResult.Value);
+    }
+    
 }
+
+#endregion
+
 #endregion
 
