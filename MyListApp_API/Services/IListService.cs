@@ -20,4 +20,8 @@ public interface IListService
 
     UserList? UpdateUserListContent(UpdateListItemDto dto);
 
+    UserList? UpdateUserListTitle(UpdateUserListDto dto);
+
+    bool DeleteUserListContent(DeleteListItemDto dto);
+
 }
