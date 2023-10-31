@@ -98,4 +98,44 @@ public class ListService : IListService
         }
         return null;
     }
+
+    public UserList? UpdateUserListTitle(UpdateUserListDto dto)
+    {
+        if (dto != null && dto.CheckValidAmountOfCharactersForTitle(dto.NewTitle) != false)
+        {
+            var user = _userService.GetUserById(dto.UserId);
+
+            if (user != null)
+            {
+                var userList = _listRepo.UserList.Where(x => x.UserId == dto.UserId && x.Id == dto.UserListId).SingleOrDefault();
+                if (userList != null)
+                {
+                    userList.Title = dto.NewTitle;
+                    return userList;
+                }
+            }
+        }
+        return null;
+    }
+
+    public bool DeleteUserListContent(DeleteListItemDto dto)
+    {
+        if (dto != null)
+        {
+            var user = _userService.GetUserById(dto.UserId);
+            if (user != null)
+            {
+                var listResult = _listRepo.UserList.Where(x => x.Id == dto.UserListId && x.UserId == dto.UserId).SingleOrDefault();
+                if (listResult != null)
+                {
+                    if (dto.CheckValidContentPosition(dto.ContentPosition, listResult.ListContent.Count) != false)
+                    {
+                        listResult.ListContent.RemoveAt(dto.ContentPosition - 1);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }

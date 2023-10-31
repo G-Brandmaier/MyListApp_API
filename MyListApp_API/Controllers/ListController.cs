@@ -122,4 +122,40 @@ public class ListController : ControllerBase
         }
         return BadRequest("Invalid information received, try again");
     }
+
+    [HttpPost]
+    [Route("UpdateUserListTitle")]
+    public async Task<IActionResult> UpdateUserListTitle(UpdateUserListDto dto)
+    {
+        if (ModelState.IsValid)
+        {
+            if (!string.IsNullOrEmpty(dto.NewTitle.TrimEnd()))
+            {
+                var result = _listService.UpdateUserListTitle(dto);
+                if (result != null)
+                {
+                    return Ok(result);
+                }
+                return Problem("Could not update list title");
+            }
+            return BadRequest("Title input can't be empty!");
+        }
+        return BadRequest("Invalid information received, try again");
+    }
+
+    [HttpDelete]
+    [Route("DeleteUserListContent")]
+    public async Task<IActionResult> DeleteUserListContent(DeleteListItemDto dto)
+    {
+        if (ModelState.IsValid)
+        {
+            var result = _listService.DeleteUserListContent(dto);
+            if (result != false)
+            {
+                return Ok("List content removed");
+            }
+            return Problem("Could not delete list content");
+        }
+        return BadRequest("Invalid information received, try again");
+    }
 }
