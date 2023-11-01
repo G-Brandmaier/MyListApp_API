@@ -24,11 +24,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="APITests\" />
+    <ProjectReference Include="..\MyListApp_API\MyListApp_API.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MyListApp_API\MyListApp_API.csproj" />
+    <Folder Include="APITests\" />
   </ItemGroup>
 
 </Project>
