@@ -19,7 +19,7 @@ public class UpdateListItemDto
     }
     public bool CheckValidContentPosition(int position, int existingListPositions)
     {
-        if (existingListPositions != 0)
+        if (existingListPositions != 0 && !int.IsNegative(existingListPositions))
         {
             if (!int.IsNegative(position) && position <= existingListPositions)
             {

@@ -103,7 +103,7 @@ public class ListController : ControllerBase
         return BadRequest("Invalid input, try again!");
     }
 
-    [HttpPost]
+    [HttpPut]
     [Route("UpdateUserListContent")]
     public async Task<IActionResult> UpdateUserListContent(UpdateListItemDto dto)
     {
@@ -123,7 +123,7 @@ public class ListController : ControllerBase
         return BadRequest("Invalid information received, try again");
     }
 
-    [HttpPost]
+    [HttpPut]
     [Route("UpdateUserListTitle")]
     public async Task<IActionResult> UpdateUserListTitle(UpdateUserListDto dto)
     {

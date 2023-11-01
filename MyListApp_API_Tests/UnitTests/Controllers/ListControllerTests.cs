@@ -4,8 +4,8 @@ using MyListApp_API.Controllers;
 using MyListApp_API.models;
 using MyListApp_API.Models;
 using MyListApp_API.Services;
+using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
-
 
 namespace MyListApp_API_Tests.UnitTests.Controllers;
 
@@ -20,7 +20,7 @@ public class ListControllerTests
         _listController = new ListController(_listServiceMock.Object);
     }
 
-    #region Gabriella Testar (18st)
+    #region Gabriella Testar (26st)
 
     #region Testar metoden CreateUserList
     [Fact]
@@ -338,6 +338,152 @@ public class ListControllerTests
         var value = Assert.IsType<ProblemDetails>(objectResult.Value);
         Assert.Equal(expectedErrorMessage, value.Detail);
     }
+    #endregion
+
+    #region Testar metoden UpdateUserListTitle
+
+    [Fact]
+    public async Task UpdateUserListTitle_ShouldUpdateUserListTitle_ReturnOkWithUpdatedUserList()
+    {
+        //Arrange
+        var updateUserListDto = new UpdateUserListDto { UserId = Guid.NewGuid(), UserListId = Guid.NewGuid(), NewTitle = "Ny Titel" };
+        var expectedUserListReturned = new UserList { Id = Guid.NewGuid(), Title = "Ny Titel", ListContent = new List<string> { "Plugga", "Städa" }, UserId = Guid.NewGuid() };
+        _listServiceMock.Setup(x => x.UpdateUserListTitle(updateUserListDto)).Returns(expectedUserListReturned);
+
+        //Act
+        var result = await _listController.UpdateUserListTitle(updateUserListDto);
+
+        //Assert
+        Assert.NotNull(result);
+        var response = Assert.IsType<OkObjectResult>(result);
+        Assert.Equal(expectedUserListReturned, response.Value);
+        Assert.IsType<UserList>(response.Value);
+
+    }
+
+    [Fact]
+    public async Task UpdateUserListTitle_ReceivesInvalidModel_ReturnBadRequestWithMessage()
+    {
+        //Arrange
+        var updateUserListDto = new UpdateUserListDto();
+        string expectedErrorMessage = "Invalid information received, try again";
+        _listController.ModelState.AddModelError("Invalid model", "Invalid information received, try again");
+
+        //Act
+        var result = await _listController.UpdateUserListTitle(updateUserListDto);
+
+        //Assert
+        var response = Assert.IsType<BadRequestObjectResult>(result);
+        var value = Assert.IsType<string>(response.Value);
+        Assert.Equal(expectedErrorMessage, response.Value);
+    }
+
+    [Fact]
+    public async Task UpdateUserListTitle_ReceivesEmptyNewTitle_ReturnBadRequestWithMessage()
+    {
+        //Arrange
+        var updateUserListDto = new UpdateUserListDto { UserId = Guid.NewGuid(), UserListId = Guid.NewGuid(), NewTitle = "" };
+        var expectedErrorMessage = "Title input can't be empty!";
+
+        //Act
+        var result = await _listController.UpdateUserListTitle(updateUserListDto);
+
+        //Assert
+        var response = Assert.IsType<BadRequestObjectResult>(result);
+        var value = Assert.IsType<string>(response.Value);
+        Assert.Equal(expectedErrorMessage, value);
+    }
+
+    [Fact]
+    public async Task UpdateUserListTitle_ReceivesBlankSpaceOnlyNewContent_ReturnBadRequestWithMessage()
+    {
+        //Arrange
+        var updateUserListDto = new UpdateUserListDto { UserId = Guid.NewGuid(), UserListId = Guid.NewGuid(), NewTitle = "     " };
+        var expectedErrorMessage = "Title input can't be empty!";
+
+        //Act
+        var result = await _listController.UpdateUserListTitle(updateUserListDto);
+
+        //Assert
+        var response = Assert.IsType<BadRequestObjectResult>(result);
+        var value = Assert.IsType<string>(response.Value);
+        Assert.Equal(expectedErrorMessage, value);
+    }
+
+    [Fact]
+    public async Task UpdateUserListTitle_UserListTitleCouldNotBeUpdated_ReturnProblemWithMessage()
+    {
+        //Arrange
+        var updateUserListDto = new UpdateUserListDto { UserId = Guid.NewGuid(), UserListId = Guid.NewGuid(), NewTitle = "Ny test titel" };
+        UserList userList = null;
+        var expectedErrorMessage = "Could not update list title";
+        _listServiceMock.Setup(x => x.UpdateUserListTitle(updateUserListDto)).Returns(userList);
+
+        //Act
+        var result = await _listController.UpdateUserListTitle(updateUserListDto);
+
+        //Assert
+        var objectResult = Assert.IsType<ObjectResult>(result);
+        var value = Assert.IsType<ProblemDetails>(objectResult.Value);
+        Assert.Equal(expectedErrorMessage, value.Detail);
+    }
+
+    #endregion
+
+    #region Testar metoden DeleteUserListContent
+
+    [Fact]
+    public async Task DeleteUserListContent_ShouldDeleteListContentInUserList_ReturnOkWithUpdatedUserList()
+    {
+        //Arrange
+        var deleteListItemdto = new DeleteListItemDto { UserId = Guid.NewGuid(), UserListId = Guid.NewGuid(), ContentPosition = 1 };
+        _listServiceMock.Setup(x => x.DeleteUserListContent(deleteListItemdto)).Returns(true);
+        var expectedResponseMessage = "List content removed";
+
+        //Act
+        var result = await _listController.DeleteUserListContent(deleteListItemdto);
+
+        //Assert
+        Assert.NotNull(result);
+        var response = Assert.IsType<OkObjectResult>(result);
+        var value = Assert.IsType<string>(response.Value);
+        Assert.Equal(expectedResponseMessage, value);
+    }
+
+    [Fact]
+    public async Task DeleteUserListContent_ReceivesInvalidModel_ReturnBadRequestWithMessage()
+    {
+        //Arrange
+        var deleteListItemdto = new DeleteListItemDto();
+        string expectedErrorMessage = "Invalid information received, try again";
+        _listController.ModelState.AddModelError("Invalid model", "Invalid information received, try again");
+
+        //Act
+        var result = await _listController.DeleteUserListContent(deleteListItemdto);
+
+        //Assert
+        var response = Assert.IsType<BadRequestObjectResult>(result);
+        var value = Assert.IsType<string>(response.Value);
+        Assert.Equal(expectedErrorMessage, response.Value);
+    }
+
+    [Fact]
+    public async Task DeleteUserListContent_CouldNotDeleteListContentInUserList_ReturnProblemWithMessage()
+    {
+        //Arrange
+        var deleteListItemdto = new DeleteListItemDto { UserId = Guid.NewGuid(), UserListId = Guid.NewGuid(), ContentPosition = 1 };
+        _listServiceMock.Setup(x => x.DeleteUserListContent(deleteListItemdto)).Returns(false);
+        var expectedErrorMessage = "Could not delete list content";
+
+        //Act
+        var result = await _listController.DeleteUserListContent(deleteListItemdto);
+
+        //Assert
+        var objectResult = Assert.IsType<ObjectResult>(result);
+        var value = Assert.IsType<ProblemDetails>(objectResult.Value);
+        Assert.Equal(expectedErrorMessage, value.Detail);
+    }
+
     #endregion
 
     #endregion
