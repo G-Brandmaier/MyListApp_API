@@ -12,6 +12,7 @@ public class ListRepo : IListRepo
         {
             new UserList
             {
+                Id = new Guid("c3a9e351-ed6b-4d36-84c0-7d29af59ad1b"),
                 Title = "Att göra",
                 ListContent =
                 {
@@ -21,6 +22,7 @@ public class ListRepo : IListRepo
             },
             new UserList
             {
+                Id = new Guid("a2e4b812-3429-4e2a-9187-516c07a51d87"),
                 Title = "Fixa inför fest",
                 ListContent =
                 {
