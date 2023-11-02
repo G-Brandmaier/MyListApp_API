@@ -534,5 +534,48 @@ namespace MyListApp_API_Tests.UnitTests.Services
         }
 
         #endregion
+
+        #region Steff testar UpdateUser (3 st)
+        [Fact]
+        public async Task RegisterUserAsync_ValidDto_ReturnsTrue()
+        {
+            //Arrange
+            var registerUserDto = new RegisterUserDto { Email = "test@example.com" };
+            _userRepoMock.Setup(r => r.GetUserByEmail(It.IsAny<string>())).Returns((User)null);
+
+            //Act
+            var result = await _userService.RegisterUserAsync(registerUserDto);
+
+            //Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task RegisterUserAsync_InvaliMail_ReturnFalse()
+        {
+            //Arrange
+            var registerUserDto = new RegisterUserDto { Email = "invalidEmail" };
+
+            //Act
+            var result = await _userService.RegisterUserAsync(registerUserDto);
+
+            //Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task RegisterUserAsync_EmailAlreadyRegistered_ReturnFalse()
+        {
+            //Arrange
+            var registerUserDto = new RegisterUserDto { Email = "alreadyExists@example.com" };
+            _userRepoMock.Setup(r => r.GetUserByEmail(It.IsAny<string>())).Returns(new User());
+            //Act
+            var result = _userService.RegisterUserAsync(registerUserDto);
+
+            //Assert
+            Assert.False(await result);
+        }
+        #endregion
+        
     }
 }

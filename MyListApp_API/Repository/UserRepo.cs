@@ -1,4 +1,5 @@
-﻿using MyListApp_API.Models;
+﻿using MyListApp_API.models;
+using MyListApp_API.Models;
 
 namespace MyListApp_API.Repository
 {
@@ -42,6 +43,16 @@ namespace MyListApp_API.Repository
             }
             return false;
         }
-
+        public bool UpdateUser(UpdateUserDto updateUserDto)
+        {
+            var existingUser = _users.FirstOrDefault(u => u.Id == updateUserDto.UserId);
+            if (existingUser != null)
+            {
+                existingUser.Address = updateUserDto.Address;
+                existingUser.PhoneNumber = updateUserDto.PhoneNumber;
+                return true;
+            }
+            return false;
+        }
     }
 }
