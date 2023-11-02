@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -471,7 +469,80 @@ namespace MyListApp_API_Tests.UnitTests.Controllers
         #endregion
 
 
-        #region GetAllUserTest - Ria ()
+        #region GetAllUserTest - Ria (4 st)
+
+        [Fact]
+        public void GetAllUsers_ReturnsOkResult_WithAllUsers()
+        {
+            // Arrange
+            var users = new List<User>
+            {
+                new User { Id = Guid.NewGuid(), Email = "test1@example.com" },
+                new User { Id = Guid.NewGuid(), Email = "test2@example.com" }
+            };
+            _userServiceMock.Setup(s => s.GetAllUsers()).Returns(users);
+
+            // Act
+            var result = _accountController.GetAllUsers();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnUsers = Assert.IsAssignableFrom<IEnumerable<object>>(okResult.Value);
+            Assert.Equal(2, returnUsers.Count());
+        }
+
+
+        [Fact]
+        public void GetAllUsers_ReturnsOkResult_WithEmptyListWhenNoUsers()
+        {
+            // Arrange
+            _userServiceMock.Setup(s => s.GetAllUsers()).Returns(new List<User>());
+
+            // Act
+            var result = _accountController.GetAllUsers();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnUsers = Assert.IsAssignableFrom<IEnumerable<object>>(okResult.Value);
+            Assert.Empty(returnUsers);
+        }
+
+
+        [Fact]
+        public void GetAllUsers_ReturnsServerError_WhenExceptionThrown()
+        {
+            // Arrange
+            _userServiceMock.Setup(s => s.GetAllUsers()).Throws(new Exception("Test exception"));
+
+            // Act
+            var result = _accountController.GetAllUsers();
+
+            // Assert
+            var statusCodeResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(500, statusCodeResult.StatusCode);
+        }
+
+        [Fact]
+        public void GetAllUsers_ReturnsInternalServerError_WhenExceptionIsThrown()
+        {
+            // Arrange
+            _userServiceMock.Setup(s => s.GetAllUsers()).Throws(new Exception("Dummy exception for testing."));
+
+            // Act
+            var result = _accountController.GetAllUsers();
+
+            // Assert
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(500, objectResult.StatusCode);
+
+            var errorResponse = objectResult.Value;
+            var messageProperty = errorResponse.GetType().GetProperty("Message");
+            Assert.NotNull(messageProperty);
+            Assert.Equal("An error occurred while fetching all users.", messageProperty.GetValue(errorResponse).ToString());
+        }
+
+
+
 
         #endregion
 
