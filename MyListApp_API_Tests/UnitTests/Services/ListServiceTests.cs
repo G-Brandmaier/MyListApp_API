@@ -21,18 +21,14 @@ public class ListServiceTests
         _listService = new ListService(_listRepoMock.Object, _userServiceMock.Object);
     }
 
-    #region Gabriella testar 20st
+    #region Gabriella testar 35st
 
     #region Testar metoden CreateUserList
     [Fact]
     public void CreateUserList_ShouldCreateUserList_ReturnCreatedUserList()
     {
         //Arrange
-        var userListDto = new UserListDto
-        {
-            Title = "Test List",
-            UserId = Guid.NewGuid()
-        };
+        var userListDto = new UserListDto { Title = "Test List", UserId = Guid.NewGuid() };
         var userList = new UserList { Title = "Test List", UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), Id = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c") };
         _listRepoMock.Setup(x => x.UserList).Returns(new List<UserList> { userList });
         _userServiceMock.Setup(x => x.GetUserById(It.IsAny<Guid>())).Returns(new User { Id = It.IsAny<Guid>(), UserName = "test@test.com", Email = "test@test.com", Password = "Test123!" });
@@ -49,12 +45,7 @@ public class ListServiceTests
     public void CreateUserList_InvalidUserIdReceived_ReturnNull()
     {
         //Arrange
-        var userListDto = new UserListDto
-        {
-            Title = "Test List",
-            UserId = Guid.NewGuid()
-        };
-
+        var userListDto = new UserListDto { Title = "Test List", UserId = Guid.NewGuid() };
         User user = null;
         _userServiceMock.Setup(x => x.GetUserById(It.IsAny<Guid>())).Returns(user);
 
@@ -375,6 +366,22 @@ public class ListServiceTests
     }
 
     [Fact]
+    public void UpdateUserListContent_ContentPostitionIsLagerThanListContentCount_ReturnNull()
+    {
+        //Arrange
+        var updatedListItemDto = new UpdateListItemDto { UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), UserListId = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), ContentPosition = 5, NewContent = "Hämta ut paket" };
+        _userServiceMock.Setup(x => x.GetUserById(It.IsAny<Guid>())).Returns(new User { Id = new Guid("12a643af-a171-4ce3-9b55-a7e017607497") });
+        var userList = new UserList { Title = "Test List", UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), Id = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), ListContent = new List<string> { "Handla", "Städa", "Träna" } };
+        _listRepoMock.Setup(x => x.UserList).Returns(new List<UserList> { userList });
+
+        //Act
+        var result = _listService.UpdateUserListContent(updatedListItemDto);
+
+        //Assert
+        Assert.Null(result);
+    }
+
+    [Fact]
     public void UpdateUserListContent_MaxLengthReachedForUpdateListItemDtoNewContent_ReturnNull()
     {
         //Arrange
@@ -417,6 +424,263 @@ public class ListServiceTests
         Assert.NotNull(result);
         Assert.Equal(updatedListItemDto.NewContent, result.ListContent[updatedListItemDto.ContentPosition - 1]);
         Assert.IsType<UserList>(result);
+    }
+
+    #endregion
+
+    #region Testar metoden UpdateUserListTitle
+
+    [Fact]
+    public void UpdateUserListTitle_ShouldUpdateUserListTitle_ReturnUpdatedUserList()
+    {
+        //Arrange
+        var updateUserListDto = new UpdateUserListDto { UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), UserListId = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), NewTitle = "Ny test titel" };
+        var userList = new UserList { Title = "Test List", UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), Id = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c") };
+        _listRepoMock.Setup(x => x.UserList).Returns(new List<UserList> { userList });
+        _userServiceMock.Setup(x => x.GetUserById(It.IsAny<Guid>())).Returns(new User { Id = It.IsAny<Guid>(), UserName = "test@test.com", Email = "test@test.com", Password = "Test123!" });
+
+        //Act
+        var result = _listService.UpdateUserListTitle(updateUserListDto);
+
+        //Assert
+        Assert.NotNull(result);
+        Assert.IsType<UserList>(result);
+        Assert.Equal(updateUserListDto.NewTitle, result.Title);
+    }
+
+    [Fact]
+    public void UpdateUserListTitle_InvalidUserListId_ReturnNull()
+    {
+        //Arrange
+        var updateUserListDto = new UpdateUserListDto { UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), UserListId = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), NewTitle = "Ny test titel" };
+        var userList = new UserList { Title = "Test List", UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), Id = new Guid("a1de0c7b-b4af-4dca-8f17-9a3656f0c60c") };
+        _listRepoMock.Setup(x => x.UserList).Returns(new List<UserList> { userList });
+        _userServiceMock.Setup(x => x.GetUserById(It.IsAny<Guid>())).Returns(new User { Id = It.IsAny<Guid>(), UserName = "test@test.com", Email = "test@test.com", Password = "Test123!" });
+
+        //Act
+        var result = _listService.UpdateUserListTitle(updateUserListDto);
+
+        //Assert
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void UpdateUserListTitle_InvalidUserId_ReturnNull()
+    {
+        //Arrange
+        var user = new User();
+        user = null;
+        var updateUserListDto = new UpdateUserListDto { UserId = new Guid("22a643af-a171-4ce3-9b55-a7e017607497"), UserListId = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), NewTitle = "Ny test titel" };
+        _userServiceMock.Setup(x => x.GetUserById(It.IsAny<Guid>())).Returns(user);
+
+        //Act
+        var result = _listService.UpdateUserListTitle(updateUserListDto);
+
+        //Assert
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void UpdateUserListTitle_MaxLengthReachedForUpdateUserListDtoNewTitle_ReturnNull()
+    {
+        //Arrange
+        var updateUserListDto = new UpdateUserListDto { UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), UserListId = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), NewTitle = "Ny test titel" };
+        var userList = new UserList { Title = "Test List", UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), Id = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c") };
+        _listRepoMock.Setup(x => x.UserList).Returns(new List<UserList> { userList });
+        _userServiceMock.Setup(x => x.GetUserById(It.IsAny<Guid>())).Returns(new User { Id = It.IsAny<Guid>(), UserName = "test@test.com", Email = "test@test.com", Password = "Test123!" });
+        char[] fixedSizeString = new char[26];
+        for (int i = 0; i < fixedSizeString.Length; i++)
+        {
+            fixedSizeString[i] = 'A';
+        }
+        updateUserListDto.NewTitle = new string(fixedSizeString);
+
+        //Act
+        var result = _listService.UpdateUserListTitle(updateUserListDto);
+
+        //Assert
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void UpdateUserListTitle_MaxLengthNotReachedForUpdateUserListDtoNewTitle_ReturnUpdatedUserList()
+    {
+        //Arrange
+        var updateUserListDto = new UpdateUserListDto { UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), UserListId = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), NewTitle = "Ny test titel" };
+        var userList = new UserList { Title = "Test List", UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), Id = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c") };
+        _listRepoMock.Setup(x => x.UserList).Returns(new List<UserList> { userList });
+        _userServiceMock.Setup(x => x.GetUserById(It.IsAny<Guid>())).Returns(new User { Id = It.IsAny<Guid>(), UserName = "test@test.com", Email = "test@test.com", Password = "Test123!" });
+        char[] fixedSizeString = new char[24];
+        for (int i = 0; i < fixedSizeString.Length; i++)
+        {
+            fixedSizeString[i] = 'A';
+        }
+        updateUserListDto.NewTitle = new string(fixedSizeString);
+
+        //Act
+        var result = _listService.UpdateUserListTitle(updateUserListDto);
+
+        //Assert
+        Assert.NotNull(result);
+        Assert.IsType<UserList>(result);
+        Assert.Equal(updateUserListDto.NewTitle, result.Title);
+    }
+
+    [Fact]
+    public void UpdateUserListTitle_UserListDtoNewTitleStringIsEmpty_ReturnNull()
+    {
+        //Arrange
+        var updateUserListDto = new UpdateUserListDto { UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), UserListId = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), NewTitle = "" };
+        var userList = new UserList { Title = "Test List", UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), Id = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c") };
+        _listRepoMock.Setup(x => x.UserList).Returns(new List<UserList> { userList });
+        _userServiceMock.Setup(x => x.GetUserById(It.IsAny<Guid>())).Returns(new User { Id = It.IsAny<Guid>(), UserName = "test@test.com", Email = "test@test.com", Password = "Test123!" });
+
+        //Act
+        var result = _listService.UpdateUserListTitle(updateUserListDto);
+
+        //Assert
+        Assert.Null(result);
+    }
+
+
+    #endregion
+
+    #region Testar metoden DeleteUserListContent
+
+    [Fact]
+    public void DeleteUserListContent_ShouldDeleteUserListContent_ReturnTrue()
+    {
+        //Arrange
+        var deleteListItemDto = new DeleteListItemDto { UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), UserListId = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), ContentPosition = 2 };
+        var userList = new UserList { Title = "Test List", UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), Id = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), ListContent = new List<string> { "Handla", "Städa", "Träna" } };
+        _listRepoMock.Setup(x => x.UserList).Returns(new List<UserList> { userList });
+        _userServiceMock.Setup(x => x.GetUserById(It.IsAny<Guid>())).Returns(new User { Id = It.IsAny<Guid>(), UserName = "test@test.com", Email = "test@test.com", Password = "Test123!" });
+
+        //Act
+        var result = _listService.DeleteUserListContent(deleteListItemDto);
+
+        //Assert
+        Assert.True(result);
+        Assert.IsType<bool>(result);
+        Assert.Equal(2, userList.ListContent.Count);
+    }
+
+    [Fact]
+    public void DeleteUserListContent_InvalidUserListId_ReturnFalse()
+    {
+        //Arrange
+        var deleteListItemDto = new DeleteListItemDto { UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), UserListId = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), ContentPosition = 2 };
+        var userList = new UserList { Title = "Test List", UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), Id = new Guid("a1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), ListContent = new List<string> { "Handla", "Städa", "Träna" } };
+        _listRepoMock.Setup(x => x.UserList).Returns(new List<UserList> { userList });
+        _userServiceMock.Setup(x => x.GetUserById(It.IsAny<Guid>())).Returns(new User { Id = It.IsAny<Guid>(), UserName = "test@test.com", Email = "test@test.com", Password = "Test123!" });
+
+        //Act
+        var result = _listService.DeleteUserListContent(deleteListItemDto);
+
+        //Assert
+        Assert.False(result);
+        Assert.IsType<bool>(result);
+    }
+
+    [Fact]
+    public void DeleteUserListContent_InvalidUserId_ReturnFalse()
+    {
+        //Arrange
+        var user = new User();
+        user = null;
+        var deleteListItemDto = new DeleteListItemDto { UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), UserListId = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), ContentPosition = 2 };
+        _userServiceMock.Setup(x => x.GetUserById(It.IsAny<Guid>())).Returns(user);
+
+        //Act
+        var result = _listService.DeleteUserListContent(deleteListItemDto);
+
+        //Assert
+        Assert.False(result);
+        Assert.IsType<bool>(result);
+    }
+
+    [Fact]
+    public void DeleteUserListContent_DeleteListItemDtoIsNull_ReturnFalse()
+    {
+        //Arrange
+        var deleteListItemDto = new DeleteListItemDto();
+        deleteListItemDto = null;
+
+        //Act
+        var result = _listService.DeleteUserListContent(deleteListItemDto);
+
+        //Assert
+        Assert.False(result);
+        Assert.IsType<bool>(result);
+    }
+
+    [Fact]
+    public void DeleteUserListContent_ContentPostitionIsNegativeNumber_ReturnFalse()
+    {
+        //Arrange
+        var deleteListItemDto = new DeleteListItemDto { UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), UserListId = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), ContentPosition = -2 };
+        _userServiceMock.Setup(x => x.GetUserById(It.IsAny<Guid>())).Returns(new User { Id = new Guid("12a643af-a171-4ce3-9b55-a7e017607497") });
+        var userList = new UserList { Title = "Test List", UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), Id = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), ListContent = new List<string> { "Handla", "Städa", "Träna" } };
+        _listRepoMock.Setup(x => x.UserList).Returns(new List<UserList> { userList });
+
+        //Act
+        var result = _listService.DeleteUserListContent(deleteListItemDto);
+
+        //Assert
+        Assert.False(result);
+        Assert.IsType<bool>(result);
+    }
+
+    [Fact]
+    public void DeleteUserListContent_ContentPostitionIsLagerThanListContent_ReturnFalse()
+    {
+        //Arrange
+        var deleteListItemDto = new DeleteListItemDto { UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), UserListId = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), ContentPosition = 5 };
+        _userServiceMock.Setup(x => x.GetUserById(It.IsAny<Guid>())).Returns(new User { Id = new Guid("12a643af-a171-4ce3-9b55-a7e017607497") });
+        var userList = new UserList { Title = "Test List", UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), Id = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), ListContent = new List<string> { "Handla", "Städa", "Träna" } };
+        _listRepoMock.Setup(x => x.UserList).Returns(new List<UserList> { userList });
+
+        //Act
+        var result = _listService.DeleteUserListContent(deleteListItemDto);
+
+        //Assert
+        Assert.False(result);
+        Assert.IsType<bool>(result);
+    }
+
+    [Fact]
+    public void DeleteUserListContent_ContentPostitionIsZero_ReturnFalse()
+    {
+        //Arrange
+        var deleteListItemDto = new DeleteListItemDto { UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), UserListId = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), ContentPosition = 0 };
+        _userServiceMock.Setup(x => x.GetUserById(It.IsAny<Guid>())).Returns(new User { Id = new Guid("12a643af-a171-4ce3-9b55-a7e017607497") });
+        var userList = new UserList { Title = "Test List", UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), Id = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), ListContent = new List<string> { "Handla", "Städa", "Träna" } };
+        _listRepoMock.Setup(x => x.UserList).Returns(new List<UserList> { userList });
+
+        //Act
+        var result = _listService.DeleteUserListContent(deleteListItemDto);
+
+        //Assert
+        Assert.False(result);
+        Assert.IsType<bool>(result);
+    }
+
+    [Fact]
+    public void DeleteUserListContent_ContentPostitionIsValidNumber_ReturnTrue()
+    {
+        //Arrange
+        var deleteListItemDto = new DeleteListItemDto { UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), UserListId = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), ContentPosition = 3 };
+        _userServiceMock.Setup(x => x.GetUserById(It.IsAny<Guid>())).Returns(new User { Id = new Guid("12a643af-a171-4ce3-9b55-a7e017607497") });
+        var userList = new UserList { Title = "Test List", UserId = new Guid("12a643af-a171-4ce3-9b55-a7e017607497"), Id = new Guid("b1de0c7b-b4af-4dca-8f17-9a3656f0c60c"), ListContent = new List<string> { "Handla", "Städa", "Träna" } };
+        _listRepoMock.Setup(x => x.UserList).Returns(new List<UserList> { userList });
+
+        //Act
+        var result = _listService.DeleteUserListContent(deleteListItemDto);
+
+        //Assert
+        Assert.True(result);
+        Assert.IsType<bool>(result);
+        Assert.Equal(2, userList.ListContent.Count);
     }
 
     #endregion

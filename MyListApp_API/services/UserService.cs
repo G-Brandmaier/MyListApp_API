@@ -47,7 +47,7 @@ namespace MyListApp_API.Services
             try
             {
                 // Search for users in the repository
-                var user = GetUserByEmail(email);
+                var user = _userRepo.GetUserByEmail(email);
 
                 if (user != null)
                 {
@@ -81,6 +81,11 @@ namespace MyListApp_API.Services
         {
             user.Id = Guid.NewGuid();
             _userRepo.AddUser(user);
+        }
+
+        public IEnumerable<User> GetAllUsers()
+        {
+            return _userRepo.GetAllUsers();
         }
 
 

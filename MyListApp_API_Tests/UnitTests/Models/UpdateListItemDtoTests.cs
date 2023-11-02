@@ -11,7 +11,7 @@ public class UpdateListItemDtoTests
         _updateListItemDto = new UpdateListItemDto();
     }
 
-    #region Gabriella testar 7st
+    #region Gabriella testar 9st
 
     #region Testar metoden CheckValidAmountOfCharactersForNewContent
     [Fact]
@@ -102,7 +102,7 @@ public class UpdateListItemDtoTests
     }
 
     [Fact]
-    public void CheckValidContentPosition_ShouldCheckInvalidPositionNumberBiggerThanActualListContentCount_ReturnFalse()
+    public void CheckValidContentPosition_ShouldCheckInvalidPositionNumberBiggerThanExistingListContentCount_ReturnFalse()
     {
         //Arrange
         int position = 14;
@@ -114,6 +114,38 @@ public class UpdateListItemDtoTests
         //Assert
         Assert.False(result);
     }
+
+
+    [Fact]
+    public void CheckValidContentPosition_ShouldCheckExistingListContentCountIsBiggerThanZero_ReturnTrue()
+    {
+        //Arrange
+        int position = 3;
+        int existingListPositions = 4;
+
+        //Act
+        var result = _updateListItemDto.CheckValidContentPosition(position, existingListPositions);
+
+        //Assert
+        Assert.True(result);
+        Assert.IsType<bool>(result);
+    }
+
+    [Fact]
+    public void CheckValidContentPosition_ShouldCheckExistingListContentCountIsZero_ReturnFalse()
+    {
+        //Arrange
+        int position = 3;
+        int existingListPositions = 0;
+
+        //Act
+        var result = _updateListItemDto.CheckValidContentPosition(position, existingListPositions);
+
+        //Assert
+        Assert.False(result);
+        Assert.IsType<bool>(result);
+    }
+
     #endregion
 
     #endregion

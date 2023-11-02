@@ -11,6 +11,8 @@ namespace MyListApp_API.Services
         User GetUserByEmail(string email);
         void AddUser(User user);
         //Task RegisterUserAsync(RegisterUserDto model);
+
+        IEnumerable<User> GetAllUsers();
         bool UpdatePassword(Guid userId, string currentPassword, string newPassword);
 
         bool DeleteUserAsync(Guid userId);
