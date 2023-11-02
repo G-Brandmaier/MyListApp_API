@@ -13,7 +13,7 @@ namespace MyListApp_API.Repository
         public UserRepo()
         {
             // Hard-code tidiga users
-            _users.Add(new User { Id = Guid.NewGuid(), UserName = "user1@example.com", Email = "user1@example.com", Password = "Password1" });
+            _users.Add(new User { Id = new Guid("2cf4e09e-7858-40be-8e26-569117928bed"), UserName = "user1@example.com", Email = "user1@example.com", Password = "Password1" });
             _users.Add(new User { Id = Guid.NewGuid(), UserName = "user2@example.com", Email = "user2@example.com", Password = "Password2" });
         }
 

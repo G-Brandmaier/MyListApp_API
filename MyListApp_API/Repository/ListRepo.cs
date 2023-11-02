@@ -17,7 +17,7 @@ public class ListRepo : IListRepo
                 {
                     "Städa", "Handla", "Träna"
                 },
-                UserId = Guid.NewGuid()
+                UserId = new Guid("2cf4e09e-7858-40be-8e26-569117928bed")
             },
             new UserList
             {
