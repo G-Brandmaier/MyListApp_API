@@ -135,13 +135,17 @@ namespace MyListApp_API.Controllers
             }
 
             return BadRequest(new { Message = "Account deletion failed" });
-           
-
-
-
-
         }
 
+        [HttpPut("UpdateUserDetails")] 
+        public IActionResult UpdateUserDetails([FromBody] UpdateUserDto updateUserDto)
+        {
+            if (_userService.UpdateUserDetails(updateUserDto))
+            {
+                return Ok("User details updated successfully.");
+            }
+            return NotFound("User not found.");
+        }
 
     }
 }

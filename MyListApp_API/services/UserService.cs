@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using MyListApp_API.models;
 using MyListApp_API.Models;
 using MyListApp_API.Repository;
 using System.Threading.Tasks;
@@ -110,12 +111,11 @@ namespace MyListApp_API.Services
             //_userRepo._users.Remove(user);
             return _userRepo.DeleteUser(user);
         }
-
-
+        public bool UpdateUserDetails(UpdateUserDto dto)
+        {
+            _userRepo.UpdateUser(dto);
+            return true;
+        }
     }
-
-
-
-
 }
 

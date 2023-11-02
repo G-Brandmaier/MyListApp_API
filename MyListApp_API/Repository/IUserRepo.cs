@@ -1,4 +1,5 @@
-﻿using MyListApp_API.Models;
+﻿using MyListApp_API.models;
+using MyListApp_API.Models;
 
 namespace MyListApp_API.Repository
 {
@@ -12,5 +13,7 @@ namespace MyListApp_API.Repository
         bool DeleteUser(User user);
         //Task<User> GetUserByIdAsync(Guid userId);
         //Task<bool> DeleteUserAsync(User user);
+
+        bool UpdateUser(UpdateUserDto updateUserDto);
     }
 }

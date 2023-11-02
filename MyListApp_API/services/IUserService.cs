@@ -1,4 +1,5 @@
-﻿using MyListApp_API.Models;
+﻿using MyListApp_API.models;
+using MyListApp_API.Models;
 
 namespace MyListApp_API.Services
 {
@@ -15,5 +16,6 @@ namespace MyListApp_API.Services
         bool UpdatePassword(Guid userId, string currentPassword, string newPassword);
 
         bool DeleteUserAsync(Guid userId);
+        bool UpdateUserDetails(UpdateUserDto updateUserDto);
     }
 }
