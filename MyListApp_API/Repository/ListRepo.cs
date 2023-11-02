@@ -26,7 +26,7 @@ public class ListRepo : IListRepo
                 {
                     "Städa", "Handla"
                 },
-                UserId = Guid.NewGuid()  
+                UserId = new Guid("cf9daebc-30ad-44fd-83bb-fa26cb47c14a")
             }
         };
     }
