@@ -1,11 +1,13 @@
 ﻿using MyListApp_API.Models;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MyListApp_API.Repository;
 
 public class ListRepo : IListRepo
 {
     public List<UserList> UserList { get; set; }
-
+    public List<UserList> _userLists;        
+  
     public ListRepo()
     {
         UserList = new List<UserList>
@@ -31,5 +33,24 @@ public class ListRepo : IListRepo
                 UserId = new Guid("cf9daebc-30ad-44fd-83bb-fa26cb47c14a")
             }
         };
+        
+    }
+    public bool DeleteUserList(Guid userListId)
+    {
+        var userList = _userLists.FirstOrDefault(l => l.Id == userListId);
+
+        if (userList !=null)
+        {
+            _userLists.Remove(userList);
+            return true;
+        }
+        return false;
+
+    }
+
+
+    public void Remove(UserList userList)
+    {
+        _userLists.Remove(userList);
     }
 }

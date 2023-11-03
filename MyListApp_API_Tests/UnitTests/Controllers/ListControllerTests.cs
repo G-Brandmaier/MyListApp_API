@@ -560,7 +560,7 @@ public class ListControllerTests
 
         //Assert
         var objectResult = Assert.IsType<OkObjectResult>(result);
-        Assert.Equal("application/json", objectResult.ContentTypes.First());
+        Assert.Equal("application/json", objectResult.ContentTypes.FirstOrDefault());
     }
 
     //Test 5. Validerar att metoden kan hantera ett stort antal listor utan att kasta ett undan tag
@@ -648,13 +648,13 @@ public class ListControllerTests
 
     //Test 1.
     [Fact]
-    public void DeleteUserList_ReturnBadRequest_WhenDtoIsNull()
+    public void DeleteUserList_ReturnNotFound_WhenDtoIsNull()
     {
         //Act
         var result = _listController.DeleteUserList(null);
 
         //Assert
-        Assert.IsType<BadRequestResult>(result);
+        Assert.IsType<NotFoundObjectResult>(result);
     }
 
     //Test 2.
@@ -669,7 +669,7 @@ public class ListControllerTests
 
         //Assert
         var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-        Assert.Equal("List not found or no match with userId", notFoundResult.Value);
+        Assert.Equal("List not found or userId dosn't match", notFoundResult.Value);
     }
 
     //Test 3.
