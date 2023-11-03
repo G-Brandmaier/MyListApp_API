@@ -2,6 +2,7 @@
 using MyListApp_API.models;
 using MyListApp_API.Models;
 using MyListApp_API.Services;
+using System.Net;
 
 namespace MyListApp_API.Controllers;
 
@@ -56,32 +57,34 @@ public class ListController : ControllerBase
     }
 
     //Get list
-    [HttpGet]
+    [HttpGet("GetAllUserLists")]
     public IActionResult GetAllUserLists()
     {
-        var lists = _listService.GetAllLists();
-        return Ok(lists);
+        try
+        {
+            var lists = _listService.GetAllLists();
+            return Ok(lists);
+        }
+        catch (Exception ex)
+        {
+            return new ObjectResult("Internal server error") { StatusCode = (int)HttpStatusCode.InternalServerError };
+        }
     }
-
-    ////Delete list
-    //[HttpDelete("DeleteList")]
-    //public IActionResult DeleteUserList(Guid listId)
-    //{
-    //    if(_listService.DeleteList(listId))
-    //    {
-    //        return Ok("List successfully deleted");
-    //    }
-    //    return NotFound("List not found");
-    //}
 
     [HttpDelete("DeleteList")]
     public IActionResult DeleteUserList([FromBody] DeleteUserListDto dto)
     {
+        if(dto == null)
+        {
+            return BadRequest("Provided data is invalid");
+        }
+
         if (_listService.DeleteList(dto))
         {
             return Ok("List sucessfully deleted");
         }
-        return NotFound("List not found or userId dosnt match");
+
+        return NotFound("List not found or userId dosn't match");
     }
 
     [HttpGet]

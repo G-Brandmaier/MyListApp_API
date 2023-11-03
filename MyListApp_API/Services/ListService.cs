@@ -1,6 +1,7 @@
 ﻿using MyListApp_API.models;
 using MyListApp_API.Models;
 using MyListApp_API.Repository;
+using System.Reflection.Metadata.Ecma335;
 
 namespace MyListApp_API.Services;
 
@@ -17,7 +18,7 @@ public class ListService : IListService
 
     public UserList? CreateUserList(UserListDto dto)
     {
-        if(dto != null && dto.CheckValidAmountOfCharactersForTitle(dto.Title) != false)
+        if (dto != null && dto.CheckValidAmountOfCharactersForTitle(dto.Title) != false)
         {
             var user = _userService.GetUserById(dto.UserId);
 
@@ -34,7 +35,7 @@ public class ListService : IListService
 
     public UserList? AddToUserList(ListItemDto dto)
     {
-        if(dto != null && dto.CheckValidAmountOfCharactersForContent(dto.Content) != false)
+        if (dto != null && dto.CheckValidAmountOfCharactersForContent(dto.Content) != false)
         {
             var user = _userService.GetUserById(dto.UserId);
             if (user != null)
@@ -52,28 +53,34 @@ public class ListService : IListService
     //Get Lists
     public List<UserList> GetAllLists()
     {
-        return _listRepo.UserList;
+        var lists = _listRepo.UserList;
+        return lists ?? new List<UserList>();
     }
 
     public bool DeleteList(DeleteUserListDto dto)
     {
+        if (dto == null)
+        {
+            return false;
+        }
+
         var listToRemove = _listRepo.UserList.FirstOrDefault(x => x.Id == dto.UserListId && x.UserId == dto.UserId);
 
-        if(listToRemove == null) 
+        if (listToRemove == null)
         {
             return false;   //hittar ej lista eller id som matchar
         }
-        _listRepo.UserList.Remove(listToRemove);
-        return true; //listan borttagen
+        return _listRepo.DeleteUserList(dto.UserListId);
     }
+
 
     public List<UserList>? GetAllUserListsById(Guid userId)
     {
         var user = _userService.GetUserById(userId);
 
-        if(user != null)
+        if (user != null)
         {
-            return _listRepo.UserList.Where(x => x.UserId == userId).ToList();  
+            return _listRepo.UserList.Where(x => x.UserId == userId).ToList();
         }
         return null;
     }

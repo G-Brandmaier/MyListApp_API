@@ -733,14 +733,17 @@ public class ListServiceTests
         //Arrange
         var list1 = new UserList { Title = "List 1", UserId = Guid.NewGuid() };
         var mockList = new List<UserList> { list1 };
-        _listRepoMock.Setup(r => r.UserList).Returns(mockList);
+        _listRepoMock.Setup(r => r.UserList).Returns(() => new List<UserList>(mockList));
 
         //Act
         var result = _listService.GetAllLists();
+
+        Assert.Contains(list1, result);
+
         result.Clear();
 
         //Assert
-        Assert.Empty(_listRepoMock.Object.UserList); //att den ej är null
+        Assert.Empty(result); //att den ej är null
         Assert.Contains(list1, _listRepoMock.Object.UserList);
     }
 
@@ -887,8 +890,8 @@ public class ListServiceTests
         var userList1 = new UserList { Id = listToDelete, Title = "List 1", UserId = validUserId };
         var userList2 = new UserList { Id = Guid.NewGuid(), Title = "List 2", UserId = validUserId };
 
-        _listRepoMock.Setup(r => r.UserList).Returns(new List<UserList> { userList1, userList2 });
-        
+        _listRepoMock.Setup(r => r.Remove(It.Is<UserList>(x => x.Id == listToDelete))).Verifiable();
+
         var deleteUserListDto = new DeleteUserListDto
         {
             UserListId = listToDelete,
@@ -923,7 +926,7 @@ public class ListServiceTests
         Assert.False(result); // förväntningar
 
         // Verifiera att Remove-metoden aldrig anropades på mocken
-        _listRepoMock.Verify(r => r.UserList.Remove(It.IsAny<UserList>()), Times.Never);
+        _listRepoMock.Verify(r => r.DeleteUserList(It.IsAny<Guid>()), Times.Never);
     }
 
     //Test 5
@@ -992,7 +995,7 @@ public class ListServiceTests
 
         //Assert
         Assert.False(result);
-        Assert.Empty(_listRepoMock.Object.UserList);
+        Assert.Contains(userList, mockListRepo.Object.UserList);
     }
 
     //Tets 8. Ta bort lista med rätt id men tomt repo, returnera false
@@ -1019,8 +1022,8 @@ public class ListServiceTests
         //Arrange
         var userId = Guid.NewGuid();
         var listIdToDelete = Guid.NewGuid();
-        var userList1 = new UserList { Id = listIdToDelete, Title = "List 1", UserId = Guid.NewGuid() };
-        var userList2 = new UserList { Id = listIdToDelete, Title = "List 2", UserId = Guid.NewGuid() };
+        var userList1 = new UserList { Id = listIdToDelete, Title = "List 1", UserId = userId };
+        var userList2 = new UserList { Id = Guid.NewGuid(), Title = "List 2", UserId = userId };
 
         var mockList = new List<UserList> { userList1, userList2 };
         _listRepoMock.Setup(r => r.UserList).Returns(mockList);
@@ -1032,7 +1035,7 @@ public class ListServiceTests
 
         //Assert
         Assert.DoesNotContain(userList1, _listRepoMock.Object.UserList);
-        Assert.DoesNotContain(userList2, _listRepoMock.Object.UserList);
+        Assert.Contains(userList2, _listRepoMock.Object.UserList);
     }
 
     //Test. 10
