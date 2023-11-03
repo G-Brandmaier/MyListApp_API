@@ -98,7 +98,7 @@ namespace MyListApp_API.Controllers
 
 
 
-        [HttpPost("update-password")]
+        [HttpPut("update-password")]
         public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordDto model)
         {
             if (!ModelState.IsValid)
