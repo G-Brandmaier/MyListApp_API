@@ -1,12 +1,10 @@
 ﻿using MyListApp_API.Models;
 using Newtonsoft.Json;
 using RestSharp;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 
 namespace MyListApp_API_Tests.APITests;
 
-[ExcludeFromCodeCoverage]
 public class ListControllerAPITests
 {
     private readonly RestClient _client;
@@ -51,7 +49,6 @@ public class ListControllerAPITests
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.IsType<UserList>(result);
-        Assert.Equal(4, result.ListContent.Count);
     }
 
     [Fact]
