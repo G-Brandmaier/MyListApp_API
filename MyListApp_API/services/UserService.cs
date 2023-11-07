@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
-using MyListApp_API.models;
+﻿using MyListApp_API.models;
 using MyListApp_API.Models;
 using MyListApp_API.Repository;
-using System.Threading.Tasks;
 
 namespace MyListApp_API.Services
 {
@@ -97,8 +95,7 @@ namespace MyListApp_API.Services
 
             user.Password = newPassword;
             return true;
-            //var result = await _userRepo.ChangePasswordAsync(user, currentPassword, newPassword);
-            //return result.Succeeded;
+
         }
 
 
@@ -108,7 +105,6 @@ namespace MyListApp_API.Services
         {
             var user = _userRepo.GetUserById(userId);//***** samma uppe
             if (user == null) return false;
-            //_userRepo._users.Remove(user);
             return _userRepo.DeleteUser(user);
         }
         public bool UpdateUserDetails(UpdateUserDto dto)
