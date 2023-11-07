@@ -12,6 +12,8 @@ namespace MyListApp_API.Models
 
         [Required]
         public string NewPassword { get; set; } = null!;
+       
+     
         public bool CheckPasswordStrength()
         {
             // Ett enkelt exempel, du skulle använda en mycket mer robust lösning i verkligheten

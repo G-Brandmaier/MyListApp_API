@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
+using MyListApp_API.models;
 using MyListApp_API.Models;
 using MyListApp_API.Services;
-using MyListApp_API.models;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 namespace MyListApp_API.Controllers
 {
@@ -98,7 +95,7 @@ namespace MyListApp_API.Controllers
 
 
 
-        [HttpPost("update-password")]
+        [HttpPut("update-password")]
         public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordDto model)
         {
             if (!ModelState.IsValid)
@@ -108,12 +105,6 @@ namespace MyListApp_API.Controllers
 
             var result = _userService.UpdatePassword(model.UserId, model.CurrentPassword, model.NewPassword); // assuming user id is in the token
 
-            //if (result)
-            //{
-            //    return Ok(new { Message = "Password updated successfully" });
-            //}
-
-            //return BadRequest(new { Message = "Password update failed" });
 
             if (result)
             {
