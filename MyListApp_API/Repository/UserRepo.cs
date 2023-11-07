@@ -1,7 +1,5 @@
 ﻿using MyListApp_API.models;
-﻿using MyListApp_API.Models;
-using System.Text;
-using System.Security.Cryptography;
+using MyListApp_API.Models;
 
 namespace MyListApp_API.Repository
 {

@@ -902,6 +902,8 @@ namespace MyListApp_API_Tests.UnitTests.Controllers
             Assert.Equal("Account deleted successfully", jsonResult["Message"].ToString());
         }
 
+
+
         //Test när användaren inte finns och inte kan raderas:
 
         [Fact]
@@ -925,10 +927,8 @@ namespace MyListApp_API_Tests.UnitTests.Controllers
         }
 
 
+
         //Testa med en ogiltig användar-ID
-
-
-
 
         [Fact]
         public async Task DeleteAccount_WithInvalidUserId_ReturnsBadRequest()
@@ -947,12 +947,13 @@ namespace MyListApp_API_Tests.UnitTests.Controllers
             // Lägg till denna rad för att skriva ut vad badRequestResult.Value innehåller
             Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(badRequestResult.Value));
 
-            // Resten av din Assert-kod kommer här...
+
         }
+
+
 
         //Testa med ett giltigt användar-ID
 
-      
         [Fact]
         public async Task DeleteAccount_WithValidUserId_ReturnsOk()
         {
@@ -987,9 +988,9 @@ namespace MyListApp_API_Tests.UnitTests.Controllers
         }
 
         
+
         // Verifierar att ett undantag propageras upp genom stacken när DeleteUserAsync-metoden i UserService kastar ett undantag.
        
-
         [Fact]
         public async Task DeleteAccount_WhenServiceThrowsException_ThrowsException()
         {
@@ -1000,6 +1001,8 @@ namespace MyListApp_API_Tests.UnitTests.Controllers
             // Act & Assert
             await Assert.ThrowsAsync<Exception>(() => _accountController.DeleteAccount(userId));
         }
+
+
 
         //DeleteAccount när user gör en delete och få ok:
 
@@ -1047,6 +1050,7 @@ namespace MyListApp_API_Tests.UnitTests.Controllers
         }
 
 
+
         //Testa när tjänsten returnerar null
 
         [Fact]
@@ -1069,11 +1073,6 @@ namespace MyListApp_API_Tests.UnitTests.Controllers
 
             Assert.Equal("Account deletion failed", messageValue);
         }
-
-
-
-        //Testa när användar-ID är Guid.Empty
-
 
 
         #endregion
