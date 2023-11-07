@@ -62,9 +62,6 @@ public class AccountControllerAPITests
         Assert.Contains("Account deleted successfully", content);
     }
 
-
-
-
     #region Register-API-Test-Ria
     [Fact]
     public void Register_ValidUserDetails_ShouldRegisterAndReturnOk()

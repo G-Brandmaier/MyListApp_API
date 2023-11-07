@@ -980,22 +980,18 @@ public class ListServiceTests
             UserId = userIdToMatch
         };
 
-        var mockListRepo = new Mock<IListRepo>();
-        mockListRepo.Setup(r => r.UserList).Returns(new List<UserList>() { userList });
+        _listRepoMock.Setup(r => r.UserList).Returns(new List<UserList> { userList });
 
-        var mockUserService = new Mock<IUserService>();
-        mockUserService.Setup(u => u.GetUserById(It.IsAny<Guid>())).Returns(new User());
-
-        var listService = new ListService(mockListRepo.Object, mockUserService.Object);
+        _userServiceMock.Setup(u => u.GetUserById(It.IsAny<Guid>())).Returns(new User());
 
         var dto = new DeleteUserListDto { UserListId = listIdToDelete, UserId = otherUserId };
 
         //Act
-        var result = listService.DeleteList(dto);
+        var result = _listService.DeleteList(dto);
 
         //Assert
         Assert.False(result);
-        Assert.Contains(userList, mockListRepo.Object.UserList);
+        Assert.Contains(userList, _listRepoMock.Object.UserList);
     }
 
     //Tets 8. Ta bort lista med rätt id men tomt repo, returnera false

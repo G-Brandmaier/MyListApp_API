@@ -1,7 +1,9 @@
-﻿using MyListApp_API.Models;
+﻿using MyListApp_API.models;
+using MyListApp_API.Models;
 using Newtonsoft.Json;
 using RestSharp;
 using System.Net;
+
 
 namespace MyListApp_API_Tests.APITests;
 
@@ -121,5 +123,45 @@ public class ListControllerAPITests
         Assert.Equal(expectedMessage, value);
     }
 
+    #endregion
+
+    #region Steff testar DeleteList
+
+    [Fact]
+    public void DeleteUserList_ShouldDeleteUserList_ReturnOkMessage()
+    {
+        //Arrange 
+        var userId = new Guid("2cf4e09e-7858-40be-8e26-569117928bed");
+        var userListId = new Guid("c3a9e351-ed6b-4d36-84c0-7d29af59ad1b");
+        var deleteUserListDto = new DeleteUserListDto { UserId = userId, UserListId = userListId };
+
+
+        var request = new RestRequest("List/DeleteList", Method.Delete);    
+        request.AddJsonBody(deleteUserListDto, "application/json");
+
+        //Act
+        var response = _client.Execute(request);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var resultMessage = JsonConvert.DeserializeObject<string>(response.Content);
+        Assert.Equal("List successfully deleted", resultMessage);
+    }
+
+    [Fact]
+    public void GetAllUserLists_ShouldReturnLists()
+    {
+        //Arrange
+        var request = new RestRequest("api/lists/GetAllUserLists", Method.Get);
+
+        //Act
+        var response = _client.Execute(request);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var lists = JsonConvert.DeserializeObject<List<UserList>>(response.Content);
+        Assert.NotNull(lists);
+        Assert.NotEmpty(lists);
+    }
     #endregion
 }
