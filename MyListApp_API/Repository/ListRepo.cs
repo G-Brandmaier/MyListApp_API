@@ -1,8 +1,10 @@
 ﻿using MyListApp_API.Models;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography.X509Certificates;
 
 namespace MyListApp_API.Repository;
 
+[ExcludeFromCodeCoverage]
 public class ListRepo : IListRepo
 {
     public List<UserList> UserList { get; set; }

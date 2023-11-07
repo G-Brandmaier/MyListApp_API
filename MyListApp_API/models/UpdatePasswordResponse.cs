@@ -1,5 +1,9 @@
-﻿namespace MyListApp_API.models
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace MyListApp_API.models
 {
+
+    [ExcludeFromCodeCoverage]
     public class UpdatePasswordResponse
     {
 

@@ -1,3 +1,5 @@
+﻿using RestSharp;
+using System.Diagnostics.CodeAnalysis;
 ﻿using MyListApp_API.Models;
 using Newtonsoft.Json;
 using RestSharp;
