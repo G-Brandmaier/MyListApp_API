@@ -6,8 +6,7 @@ namespace MyListApp_API.Repository;
 [ExcludeFromCodeCoverage]
 public class ListRepo : IListRepo
 {
-    public List<UserList> UserList { get; set; }
-    //public List<UserList> _userLists;        
+    public List<UserList> UserList { get; set; }     
   
     public ListRepo()
     {
@@ -48,7 +47,6 @@ public class ListRepo : IListRepo
         return false;
 
     }
-
 
     public void Remove(UserList userList)
     {

@@ -39,7 +39,7 @@ public class AccountControllerAPITests
     public async Task DeleteAccount_ShouldDeleteUser_ReturnOk()
     {
 
-        var userId = new Guid("2cf4e09e-7858-40be-8e26-569117928bed");
+        var userId = new Guid("cf9daebc-30ad-44fd-83bb-fa26cb47c14a");
 
 
         using var client = new HttpClient();
