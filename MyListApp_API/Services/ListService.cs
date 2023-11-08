@@ -13,8 +13,7 @@ public class ListService : IListService
     public ListService(IListRepo listRepo, IUserService userService)
     {
         _listRepo = listRepo;
-        _userService = userService;
-    }
+        _userService = userService;    }
 
     public UserList? CreateUserList(UserListDto dto)
     {

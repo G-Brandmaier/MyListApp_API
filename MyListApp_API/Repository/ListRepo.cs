@@ -8,7 +8,7 @@ namespace MyListApp_API.Repository;
 public class ListRepo : IListRepo
 {
     public List<UserList> UserList { get; set; }
-    public List<UserList> _userLists;        
+    //public List<UserList> _userLists;        
   
     public ListRepo()
     {
@@ -39,11 +39,11 @@ public class ListRepo : IListRepo
     }
     public bool DeleteUserList(Guid userListId)
     {
-        var userList = _userLists.FirstOrDefault(l => l.Id == userListId);
+        var userList = UserList.FirstOrDefault(l => l.Id == userListId);
 
         if (userList !=null)
         {
-            _userLists.Remove(userList);
+            UserList.Remove(userList);
             return true;
         }
         return false;
@@ -53,6 +53,6 @@ public class ListRepo : IListRepo
 
     public void Remove(UserList userList)
     {
-        _userLists.Remove(userList);
+        UserList.Remove(userList);
     }
 }

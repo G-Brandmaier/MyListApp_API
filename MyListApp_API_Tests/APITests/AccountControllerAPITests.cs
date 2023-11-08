@@ -37,8 +37,6 @@ public class AccountControllerAPITests
 
     }
 
-
-
     [Fact]
     public async Task DeleteAccount_ShouldDeleteUser_ReturnOk()
     {
@@ -62,7 +60,6 @@ public class AccountControllerAPITests
     }
 
     #endregion
-
 
     #region Register-API-Test-Ria
     [Fact]

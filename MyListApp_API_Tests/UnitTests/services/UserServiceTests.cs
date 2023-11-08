@@ -18,7 +18,7 @@ namespace MyListApp_API_Tests.UnitTests.Services
         {
             _userRepoMock = new Mock<IUserRepo>();
             _loggerMock = new Mock<ILogger<UserService>>();
-            _userService = new UserService(_userRepoMock.Object, _loggerMock.Object);
+            _userService = new UserService(_userRepoMock.Object);
         }
 
 
