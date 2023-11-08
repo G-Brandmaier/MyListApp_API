@@ -1,11 +1,8 @@
 ﻿using Moq;
+using MyListApp_API.models;
 using MyListApp_API.Models;
 using MyListApp_API.Repository;
 using MyListApp_API.Services;
-using NuGet.Frameworks;
-using System.Xml.Serialization;
-using System.Linq;
-using MyListApp_API.models;
 
 namespace MyListApp_API_Tests.UnitTests.Services;
 

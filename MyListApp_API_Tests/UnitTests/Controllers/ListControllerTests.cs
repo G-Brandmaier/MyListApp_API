@@ -4,8 +4,6 @@ using MyListApp_API.Controllers;
 using MyListApp_API.models;
 using MyListApp_API.Models;
 using MyListApp_API.Services;
-using Newtonsoft.Json.Linq;
-using System.Threading.Tasks;
 
 namespace MyListApp_API_Tests.UnitTests.Controllers;
 

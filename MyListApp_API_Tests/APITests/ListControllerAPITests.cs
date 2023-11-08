@@ -8,7 +8,6 @@ using System.Net;
 
 namespace MyListApp_API_Tests.APITests;
 
-[ExcludeFromCodeCoverage]
 public class ListControllerAPITests
 {
     private readonly RestClient _client;
