@@ -81,7 +81,7 @@ public class ListController : ControllerBase
 
         if (_listService.DeleteList(dto))
         {
-            return Ok("List sucessfully deleted");
+            return Ok("List successfully deleted");
         }
 
         return NotFound("List not found or userId dosn't match");
