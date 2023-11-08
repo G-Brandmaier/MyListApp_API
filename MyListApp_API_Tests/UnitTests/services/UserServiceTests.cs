@@ -1,14 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
+using MyListApp_API.Models;
 using MyListApp_API.Repository;
 using MyListApp_API.Services;
-using Xunit;
-using MyListApp_API.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 
 
@@ -46,6 +40,7 @@ namespace MyListApp_API_Tests.UnitTests.Services
             Assert.False(result);
         }
 
+
         [Fact]
         public async Task RegisterUserAsync_ShouldReturnTrue_IfUserDoesNotExist()
         {
@@ -64,6 +59,7 @@ namespace MyListApp_API_Tests.UnitTests.Services
             _userRepoMock.Verify(repo => repo.AddUser(It.IsAny<User>()), Times.Once); // verifying that the AddUser method was called once
         }
 
+
         [Fact]
         public async Task RegisterUserAsync_ShouldAssignDefaultPassword_IfUserDoesNotExist()
         {
@@ -80,6 +76,7 @@ namespace MyListApp_API_Tests.UnitTests.Services
             // Assert
             _userRepoMock.Verify(repo => repo.AddUser(It.Is<User>(u => u.Password == "ExempleHardCodedPassword")), Times.Once);
         }
+
 
         [Fact]
         public async Task RegisterUserAsync_ShouldAssignEmailToUserName_IfUserDoesNotExist()
@@ -98,6 +95,7 @@ namespace MyListApp_API_Tests.UnitTests.Services
             _userRepoMock.Verify(repo => repo.AddUser(It.Is<User>(u => u.UserName == email)), Times.Once);
         }
 
+
         [Fact]
         public async Task RegisterUserAsync_ShouldAssignUniqueId_IfUserDoesNotExist()
         {
@@ -115,6 +113,7 @@ namespace MyListApp_API_Tests.UnitTests.Services
             _userRepoMock.Verify(repo => repo.AddUser(It.Is<User>(u => u.Id != Guid.Empty)), Times.Once);
         }
 
+
         [Fact]
         public async Task RegisterUserAsync_ShouldReturnFalse_IfModelIsInvalid() // in this case model input "RegisterUserDto"
         {
@@ -127,6 +126,7 @@ namespace MyListApp_API_Tests.UnitTests.Services
             // Assert
             Assert.False(result);
         }
+
 
         [Fact]
         public async Task RegisterUserAsync_ShouldSetCorrectPassword_IfUserDoesNotExist()
@@ -145,6 +145,7 @@ namespace MyListApp_API_Tests.UnitTests.Services
             Assert.True(result);
             _userRepoMock.Verify(repo => repo.AddUser(It.Is<User>(u => u.Password == "ExempleHardCodedPassword")), Times.Once);
         }
+
 
         [Fact]
         public async Task RegisterUserAsync_ShouldHandleDatabaseErrorsGracefully()
@@ -224,7 +225,6 @@ namespace MyListApp_API_Tests.UnitTests.Services
 
 
 
-
         [Fact]
         public async Task AuthenticateAsync_ShouldThrowUnexpectedExceptions()
         {
@@ -234,10 +234,6 @@ namespace MyListApp_API_Tests.UnitTests.Services
             // Act & Assert
             await Assert.ThrowsAsync<InvalidOperationException>(() => _userService.AuthenticateAsync("test@example.com", "password"));
         }
-
-
-
-
 
 
         #endregion
@@ -532,7 +528,6 @@ namespace MyListApp_API_Tests.UnitTests.Services
         #region Ghazaleh Delete UserServiceTest ( 8 st )
 
         /// Det här testet säkerställer att DeleteUserAsync fungerar korrekt när en existerande användare försöker raderas.
-
 
         [Fact]
         public void DeleteUserAsync_UserExists_ShouldReturnTrue()

@@ -1,12 +1,9 @@
+﻿using RestSharp;
+using System.Diagnostics.CodeAnalysis;
 ﻿using MyListApp_API.Models;
 using Newtonsoft.Json;
 using RestSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MyListApp_API_Tests.APITests;
 
@@ -18,6 +15,8 @@ public class AccountControllerAPITests
     {
         _client = new RestClient("https://localhost:7223/api");
     }
+
+    #region Ghazaleh tests
     [Fact]
     public void UpdatePassword_ShouldUpdatePassword_ReturnSuccess()
     {
@@ -37,8 +36,6 @@ public class AccountControllerAPITests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
     }
-
-
 
     [Fact]
     public async Task DeleteAccount_ShouldDeleteUser_ReturnOk()
@@ -62,11 +59,13 @@ public class AccountControllerAPITests
         Assert.Contains("Account deleted successfully", content);
     }
 
+    #endregion
+
     #region Register-API-Test-Ria
     [Fact]
     public void Register_ValidUserDetails_ShouldRegisterAndReturnOk()
     {
-        // Siapkan data input
+        
         var registerData = new RegisterUserDto
         {
             Email = "test@email.com",

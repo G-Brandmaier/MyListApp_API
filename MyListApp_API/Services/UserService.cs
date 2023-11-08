@@ -8,12 +8,12 @@ namespace MyListApp_API.Services
     {
         private readonly IUserRepo _userRepo;
         //private readonly UserRepo _userRepo;
-        //private readonly ILogger<UserService> _logger;
+        private readonly ILogger<UserService> _logger;
 
-        public UserService(IUserRepo userRepo)//ILogger<UserService> logger)
+        public UserService(IUserRepo userRepo, ILogger<UserService> logger)
         {
             _userRepo = userRepo;
-            //_logger = logger;
+            _logger = logger;
         }
 
         public async Task<bool> RegisterUserAsync(RegisterUserDto model)
@@ -58,7 +58,7 @@ namespace MyListApp_API.Services
             catch (Exception ex)
             {
                 // An error Log
-                //_logger.LogError(ex, "An error occurred during user authentication.");
+                _logger.LogError(ex, "An error occurred during user authentication.");
                 throw; // Continue throwing exceptions after logging
             }
 
